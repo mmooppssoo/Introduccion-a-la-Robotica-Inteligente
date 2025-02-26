@@ -81,18 +81,19 @@ void CBraitenbergVehicle2Controller::SimulationStep(unsigned n_step_number, doub
 	/* Read Light */
 	double* light = m_seLight->GetSensorReading(m_pcEpuck);
 
-	/* Print Light */	
-	printf("LIGHT: ");
-	for ( int i = 0 ; i < m_seLight->GetNumberOfInputs() ; i ++ ){
+  /* Print Light */	
+  printf("LIGHT: ");
+  for ( int i = 0 ; i < m_seLight->GetNumberOfInputs() ; i ++ )
+  {
     printf("%1.3f ", light[i]);
-    }
-    printf ("\n");
+  }
+  printf ("\n");
 
-    /* Define speed for left and right wheel */
-    double speed[2];
+  /* Define speed for left and right wheel */
+  double speed[2];
   
-    /* STUDENTS MUST IMPLEMENT THE CODE HERE - START 
-    * IMPORTANT!!: The code must exclusively depend on "light" variable */
+  /* STUDENTS MUST IMPLEMENT THE CODE HERE - START 
+   * IMPORTANT!!: The code must exclusively depend on "light" variable */
 	double tmp[2];
 	static int giro = 0;
 
@@ -145,6 +146,7 @@ void CBraitenbergVehicle2Controller::SimulationStep(unsigned n_step_number, doub
     	}
 	
 	} else if (giro == 0) {
+		//Condiciones para solucionar problema si la luz esta detras del robot
 		if (((light[3] > light[4]) && (light[3] - light[4] ) < 0.150) && light[3] > 0.3){
 			speed[0] = 0.5;
     		speed[1] = 1;
@@ -170,4 +172,3 @@ void CBraitenbergVehicle2Controller::SimulationStep(unsigned n_step_number, doub
 
 /******************************************************************************/
 /******************************************************************************/
-
