@@ -146,12 +146,17 @@ void CBraitenbergVehicle2Controller::SimulationStep(unsigned n_step_number, doub
     	}
 	
 	} else if (giro == 0) {
+		//Condicion para solucionar problema si la luz esta muy cercana al robot
+		if (light_total > 1.65){
+			speed[0] = 1;
+    		speed[1] = 1;
+		}
 		//Condiciones para solucionar problema si la luz esta detras del robot
-		if (((light[3] > light[4]) && (light[3] - light[4] ) < 0.150) && light[3] > 0.3){
+		if (((light[3] > light[4]) && (light[3] - light[4] ) < 0.150) && light[3] > 0.3 && light[3] < 0.45){
 			speed[0] = 0.5;
     		speed[1] = 1;
 		}
-		else if (((light[3] < light[4]) && (light[4] - light[3]) < 0.150) && light[4] > 0.3){
+		else if (((light[3] < light[4]) && (light[4] - light[3]) < 0.150) && light[4] > 0.3 && light[4] < 0.45){
 			speed[0] = 1;
     		speed[1] = 0.5;
 		}
@@ -161,7 +166,7 @@ void CBraitenbergVehicle2Controller::SimulationStep(unsigned n_step_number, doub
     		speed[1] = 0.5 + (0.95 - tmp[1]);
 		}
 	}
-
+	printf("Luz total: %f \n",light_total);
   
   /* STUDENTS MUST IMPLEMENT THE CODE HERE - END*/
   
