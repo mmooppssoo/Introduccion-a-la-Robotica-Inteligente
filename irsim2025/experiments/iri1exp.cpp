@@ -41,47 +41,6 @@ using namespace std;
 
 /*Create Arena */
 static const char* pchHeightMap = 
-//"%%%%%%%%%%%%%%%%%%%%"
-//"%############%#####%"
-//"%############%#####%"
-//"%##%%%%%%%%##%##%##%"
-//"%##%######%#####%##%"
-//"%##%######%#####%##%"
-//"%##%##%%%%%%%%%%%##%"
-//"%##%###############%"
-//"%##%###############%"
-//"%##%##%%%%%%%%#####%"
-//"%##%##%######%%%%%%%"
-//"%##%###############%"
-//"%##%#####%%########%"
-//"%##%%%%%%%%%%%#####%"
-//"%##%##%############%"
-//"%##%##%############%"
-//"%##%##%#####%%%%%##%"
-//"%#####%#########%##%"
-//"%#####%#########%##%"
-//"%%%%%%%%%%%%%%%%%%%%";
-
-// "%%%%%%%%%%%%%%%%%%%%"
-// "%###############%##%"
-// "%###############%##%"
-// "%##%%%%#########%##%"
-// "%##%############%##%"
-// "%##%############%##%"
-// "%##%###%###%#######%"
-// "%######%###%#######%"
-// "%######%%%%%#######%"
-// "%###############%##%"
-// "%###############%##%"
-// "%%%%%%%#########%##%"
-// "%##########%####%##%"
-// "%###%######%####%%%%"
-// "%###%######%#######%"
-// "%###%######%#######%"
-// "%%%%%###%##%%%%%%%%%"
-// "%#######%##########%"
-// "%#######%##########%"
-// "%%%%%%%%%%%%%%%%%%%%";
 
 "%%%%%%%%%%%%%%%%%%%%"
 "%##########%#######%"
@@ -103,7 +62,6 @@ static const char* pchHeightMap =
 "%######%###########%"
 "%######%###########%"
 "%%%%%%%%%%%%%%%%%%%%";
-
 
 extern gsl_rng* rng;
 extern long int rngSeed;
@@ -137,10 +95,13 @@ CIri1Exp::CIri1Exp(const char* pch_name, const char* paramsFile) :
 		m_nLightObjectNumber = 0;
 		m_pcvLightObjects = new dVector2[m_nLightObjectNumber];
 	
-		m_nBlueLightObjectNumber = 0;
+		m_nBlueLightObjectNumber = 1;
 		m_pcvBlueLightObjects = new dVector2[m_nBlueLightObjectNumber];
+
+		m_nRedLightObjectNumber = 8;
+		m_pcvRedLightObjects = new dVector2[m_nRedLightObjectNumber];
 		
-		m_nNumberOfGroundArea = 0;
+		m_nNumberOfGroundArea = 3;
 		m_vGroundAreaCenter = new dVector2[m_nNumberOfGroundArea];
 		m_fGroundAreaExternalRadius = new double[m_nNumberOfGroundArea];
 		m_fGroundAreaInternalRadius = new double[m_nNumberOfGroundArea];
