@@ -36,7 +36,7 @@ private:
    	double 		m_fLeftSpeed;
    	double 		m_fRightSpeed;
    	double**	m_fActivationTable;
-   	int 			m_nWriteToFile;
+   	int 		m_nWriteToFile;
    	double 		m_fTime;
 	double    fBattToForageInhibitor;
 

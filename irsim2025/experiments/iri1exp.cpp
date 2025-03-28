@@ -54,14 +54,16 @@ static const char* pchHeightMap =
 "%%%%%##%###%%%%%%##%"
 "%######%########%##%"
 "%######%########%##%"
-"%##%%%%%##%##%##%##%"
-"%#########%##%##%##%"
+"%##%%%%%#####%##%##%"
+"%############%##%##%"
 "%############%#####%"
 "%##%%%%%#####%#####%"
 "%######%###%%%%%%%%%"
 "%######%###########%"
 "%######%###########%"
 "%%%%%%%%%%%%%%%%%%%%";
+
+
 
 extern gsl_rng* rng;
 extern long int rngSeed;
@@ -79,7 +81,7 @@ CIri1Exp::CIri1Exp(const char* pch_name, const char* paramsFile) :
 	/* If there is not a parameter file input get default values*/
 	if (paramsFile == NULL )
 	{
-		m_nRobotsNumber = 0;
+		m_nRobotsNumber = 1;
 		SetNumberOfEpucks(m_nRobotsNumber);
 		m_pcvRobotPositions = new dVector2[m_nRobotsNumber];
 		m_fRobotOrientations = new double[m_nRobotsNumber];
@@ -90,22 +92,6 @@ CIri1Exp::CIri1Exp(const char* pch_name, const char* paramsFile) :
 			m_fRobotOrientations[i] 	= 0.0;
 		}
 		m_nRunTime = 10000;
-
-
-		m_nLightObjectNumber = 0;
-		m_pcvLightObjects = new dVector2[m_nLightObjectNumber];
-	
-		m_nBlueLightObjectNumber = 1;
-		m_pcvBlueLightObjects = new dVector2[m_nBlueLightObjectNumber];
-
-		m_nRedLightObjectNumber = 8;
-		m_pcvRedLightObjects = new dVector2[m_nRedLightObjectNumber];
-		
-		m_nNumberOfGroundArea = 3;
-		m_vGroundAreaCenter = new dVector2[m_nNumberOfGroundArea];
-		m_fGroundAreaExternalRadius = new double[m_nNumberOfGroundArea];
-		m_fGroundAreaInternalRadius = new double[m_nNumberOfGroundArea];
-		m_fGroundAreaColor = new double[m_nNumberOfGroundArea];
 	}
 	/* Else, extract info from the file */
 	else
