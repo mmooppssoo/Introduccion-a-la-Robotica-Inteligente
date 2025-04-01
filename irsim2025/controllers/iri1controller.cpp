@@ -46,7 +46,7 @@ using namespace std;
 /* Threshold to avoid obstacles */
 #define PROXIMITY_THRESHOLD 0.5
 /* Threshold to define the battery discharged */
-#define BATTERY_THRESHOLD 0.5
+#define BATTERY_THRESHOLD 0.49
 /* Threshold to reduce the speed of the robot */
 #define NAVIGATE_LIGHT_THRESHOLD 0.9
 
@@ -139,10 +139,8 @@ void CIri1Controller::ExecuteBehaviors ( void )
 		m_fActivationTable[i][2] = 0.0;
 	}
 
-	/* Release Inhibitors */
-	fBattToForageInhibitor = 1.0;
 	/* Set Leds to BLACK */
-	m_pcEpuck->SetAllColoredLeds(	LED_COLOR_BLACK);
+	m_pcEpuck->SetAllColoredLeds(	LED_COLOR_BLUE);
 	
 	ObstacleAvoidance ( AVOID_PRIORITY );
 	Rescue ( RESCUE_PRIORITY );
@@ -262,12 +260,6 @@ void CIri1Controller::Navigate ( unsigned int un_priority )
 		fTotalLight += light[i];
 	}
 	
-	/* DEBUG */
-	/* Leer Battery Sensores */
-	//double* battery = m_seBattery->GetSensorReading(m_pcEpuck);
-	//printf("fTotalLight: %2f -- %2f\n",fTotalLight,battery[0]);
-	/* DEBUG */
-	
 	if ( fTotalLight >= NAVIGATE_LIGHT_THRESHOLD )
 	{
 		m_fActivationTable[un_priority][0] = SPEED/4;
@@ -298,49 +290,52 @@ void CIri1Controller::Navigate ( unsigned int un_priority )
 
 void CIri1Controller::LoadWater( unsigned int un_priority )
 {
-// 	/* Leer Battery Sensores */
-// 	double* battery = m_seBattery->GetSensorReading(m_pcEpuck);
+	/* Leer Battery Sensores */
+	double* battery = m_seBlueBattery->GetSensorReading(m_pcEpuck);
 		
-// 	/* Leer Sensores de Luz */
-// 	double* light = m_seLight->GetSensorReading(m_pcEpuck);
+	/* Leer Sensores de Luz azul */
+	double* light = m_seBlueLight->GetSensorReading(m_pcEpuck);
 
-// 	if ( battery[0] < BATTERY_THRESHOLD )
-// 	{
-// 		/* Set Leds to RED */
-// 		m_pcEpuck->SetAllColoredLeds(	LED_COLOR_RED);
+	printf("Bateria: %f", battery[0]);
+	printf("Luz azul: (%f,%f,%f,%f,%f,%f,%f,%f)", light[0],light[1],light[2],light[3],light[4],light[5],light[6],light[7]);
+
+	if ( battery[0] < BATTERY_THRESHOLD )
+	{
+		/* Set Leds to RED */
+		m_pcEpuck->SetAllColoredLeds(	LED_COLOR_RED);
 		
 
-// 		fBattToForageInhibitor = 0.0;
-// 		/* If not pointing to the light */
-// 		if ( ( light[0] * light[7] == 0.0 ) )
-// 		{
-// 			m_fActivationTable[un_priority][2] = 1.0;
+		fBattToForageInhibitor = 0.0;
+		/* If not pointing to the light */
+		if ( ( light[0] * light[7] == 0.0 ) )
+		{
+			m_fActivationTable[un_priority][2] = 1.0;
 
-// 			double lightLeft 	= light[0] + light[1] + light[2] + light[3];
-// 			double lightRight = light[4] + light[5] + light[6] + light[7];
+			double lightLeft 	= light[0] + light[1] + light[2] + light[3];
+			double lightRight = light[4] + light[5] + light[6] + light[7];
 
-// 			if ( lightLeft > lightRight )
-// 			{
-// 				m_fActivationTable[un_priority][0] = -SPEED;
-// 				m_fActivationTable[un_priority][1] = SPEED;
-// 			}
-// 			else
-// 			{
-// 				m_fActivationTable[un_priority][0] = SPEED;
-// 				m_fActivationTable[un_priority][1] = -SPEED;
-// 			}
-// 		}
-// 	}
+			if ( lightLeft > lightRight )
+			{
+				m_fActivationTable[un_priority][0] = -SPEED;
+				m_fActivationTable[un_priority][1] = SPEED;
+			}
+			else
+			{
+				m_fActivationTable[un_priority][0] = SPEED;
+				m_fActivationTable[un_priority][1] = -SPEED;
+			}
+		}
+	}
 	
-// 	if (m_nWriteToFile ) 
-// 	{
-// 		/* INIT WRITE TO FILE */
-// 		FILE* fileOutput = fopen("outputFiles/batteryOutput", "a");
-// 		fprintf(fileOutput, "%2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f ", m_fTime, battery[0], light[0], light[1], light[2], light[3], light[4], light[5], light[6], light[7]);
-// 		fprintf(fileOutput, "%2.4f %2.4f %2.4f\n",m_fActivationTable[un_priority][2], m_fActivationTable[un_priority][0], m_fActivationTable[un_priority][1]);
-// 		fclose(fileOutput);
-// 		/* END WRITE TO FILE */
-// 	}
+	if (m_nWriteToFile ) 
+	{
+		/* INIT WRITE TO FILE */
+		FILE* fileOutput = fopen("outputFiles/batteryOutput", "a");
+		fprintf(fileOutput, "%2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f ", m_fTime, battery[0], light[0], light[1], light[2], light[3], light[4], light[5], light[6], light[7]);
+		fprintf(fileOutput, "%2.4f %2.4f %2.4f\n",m_fActivationTable[un_priority][2], m_fActivationTable[un_priority][0], m_fActivationTable[un_priority][1]);
+		fclose(fileOutput);
+		/* END WRITE TO FILE */
+	}
 }
 
 /******************************************************************************/
@@ -358,7 +353,7 @@ void CIri1Controller::Rescue ( unsigned int un_priority )
 // 	if ( ( groundMemory[0] * fBattToForageInhibitor ) == 1.0 )
 // 	{
 // 		/* Set Leds to BLUE */
-// 		m_pcEpuck->SetAllColoredLeds(	LED_COLOR_BLUE);
+// 		m_pcEpuck->SetAllColoredLeds(	LED_COLOR_YELLOW);
 		
 // 		/* Go oposite to the light */
 // 		if ( ( light[3] * light[4] == 0.0 ) )
@@ -396,45 +391,5 @@ void CIri1Controller::Rescue ( unsigned int un_priority )
 
 void CIri1Controller::FightFire ( unsigned int un_priority )
 {
-// 	/* Leer Sensores de Suelo Memory */
-// 	double* groundMemory = m_seGroundMemory->GetSensorReading(m_pcEpuck);
-	
-// 	/* Leer Sensores de Luz */
-// 	double* light = m_seLight->GetSensorReading(m_pcEpuck);
-	
-// 	/* If with a virtual puck */
-// 	if ( ( groundMemory[0] * fBattToForageInhibitor ) == 1.0 )
-// 	{
-// 		/* Set Leds to BLUE */
-// 		m_pcEpuck->SetAllColoredLeds(	LED_COLOR_BLUE);
-		
-// 		/* Go oposite to the light */
-// 		if ( ( light[3] * light[4] == 0.0 ) )
-// 		{
-// 			m_fActivationTable[un_priority][2] = 1.0;
 
-// 			double lightLeft 	= light[0] + light[1] + light[2] + light[3];
-// 			double lightRight = light[4] + light[5] + light[6] + light[7];
-
-// 			if ( lightLeft > lightRight )
-// 			{
-// 				m_fActivationTable[un_priority][0] = SPEED;
-// 				m_fActivationTable[un_priority][1] = -SPEED;
-// 			}
-// 			else
-// 			{
-// 				m_fActivationTable[un_priority][0] = -SPEED;
-// 				m_fActivationTable[un_priority][1] = SPEED;
-// 			}
-// 		}
-// 	}
-// 	if (m_nWriteToFile ) 
-// 	{
-// 		/* INIT WRITE TO FILE */
-// 		FILE* fileOutput = fopen("outputFiles/forageOutput", "a");
-// 		fprintf(fileOutput, "%2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f ", m_fTime, fBattToForageInhibitor, groundMemory[0], light[0], light[1], light[2], light[3], light[4], light[5], light[6], light[7]);
-// 		fprintf(fileOutput, "%2.4f %2.4f %2.4f\n",m_fActivationTable[un_priority][2], m_fActivationTable[un_priority][0], m_fActivationTable[un_priority][1]);
-// 		fclose(fileOutput);
-// 		/* END WRITE TO FILE */
-// 	}
 }

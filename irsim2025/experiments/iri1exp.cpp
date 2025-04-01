@@ -75,8 +75,6 @@ CIri1Exp::CIri1Exp(const char* pch_name, const char* paramsFile) :
 	CExperiment(pch_name, COLLISION_MODEL_SIMPLE, COLLISION_HANDLER_POSITION)
 {
 
-	m_fLightSensorRange = 1.0; //1 meter
-	m_fBlueLightSensorRange = 1.0; //1 meter
 	
 	/* If there is not a parameter file input get default values*/
 	if (paramsFile == NULL )
