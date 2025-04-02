@@ -26,6 +26,10 @@ class CBlueBatterySensor : public CSensor
 public:
     CBlueBatterySensor(const char* pch_name, double f_range, double f_charge_coef, double f_discharge_coef);
     ~CBlueBatterySensor();
+	
+	//Method Set Battery Level
+	void SetBatteryLevel(double fLevel);
+
 
     // Get the sensor type:
     virtual unsigned int GetType();

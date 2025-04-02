@@ -86,3 +86,14 @@ void CBlueBatterySensor::Reset()
 	m_fBatteryLevel = 1.0;
 	SetInput(0,m_fBatteryLevel);
 }
+
+/******************************************************************************/
+/******************************************************************************/
+
+void CBlueBatterySensor::SetBatteryLevel(double batLevel) {
+    m_fBatteryLevel = batLevel;
+    if (m_fBatteryLevel < 0.0) m_fBatteryLevel = 0.0;
+    if (m_fBatteryLevel > 1.0) m_fBatteryLevel = 1.0;
+    SetInput(0, m_fBatteryLevel);
+}
+

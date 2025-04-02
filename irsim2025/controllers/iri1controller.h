@@ -38,7 +38,7 @@ private:
    	double**	m_fActivationTable;
    	int 		m_nWriteToFile;
    	double 		m_fTime;
-	double    fBattToForageInhibitor;
+	double 		newBattery;
 
    	/* Functions */
    	void ExecuteBehaviors ( void );
