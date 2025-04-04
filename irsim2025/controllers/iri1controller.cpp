@@ -62,6 +62,8 @@ CIri1Controller::CIri1Controller (const char* pch_name, CEpuck* pc_epuck, int n_
 	/* Set Prox Sensor */
 	m_seProx = (CEpuckProximitySensor*) m_pcEpuck->GetSensor(SENSOR_PROXIMITY);
 	/* Set Blue light Sensor */
+	m_seLight = (CRealLightSensor*) m_pcEpuck->GetSensor(SENSOR_REAL_LIGHT);
+	/* Set Blue light Sensor */
 	m_seBlueLight = (CRealBlueLightSensor*) m_pcEpuck->GetSensor(SENSOR_REAL_BLUE_LIGHT);
 	/* Set Red light Sensor */
 	m_seRedLight = (CRealRedLightSensor*) m_pcEpuck->GetSensor(SENSOR_REAL_RED_LIGHT);
@@ -356,7 +358,7 @@ void CIri1Controller::Rescue ( unsigned int un_priority )
 	double* groundMemory = m_seGroundMemory->GetSensorReading(m_pcEpuck);
 	
 	/* Leer Sensores de Luz */
-	double* light = m_seBlueLight->GetSensorReading(m_pcEpuck);
+	double* light = m_seLight->GetSensorReading(m_pcEpuck);
 	
 	/* Si recoge a una persona */
 	if ( groundMemory[0]  == 1.0 )
@@ -364,8 +366,8 @@ void CIri1Controller::Rescue ( unsigned int un_priority )
 		/* Set Leds to YELLOW */
 		m_pcEpuck->SetAllColoredLeds(	LED_COLOR_YELLOW);
 		
-		/* Go oposite to the light */
-		if ( ( light[3] * light[4] == 0.0 ) )
+		/* If not pointing to the light */
+		if ( ( light[0] * light[7] == 0.0 ) )
 		{
 			m_fActivationTable[un_priority][2] = 1.0;
 
@@ -374,13 +376,13 @@ void CIri1Controller::Rescue ( unsigned int un_priority )
 
 			if ( lightLeft > lightRight )
 			{
-				m_fActivationTable[un_priority][0] = SPEED;
-				m_fActivationTable[un_priority][1] = -SPEED;
+				m_fActivationTable[un_priority][0] = -SPEED;
+				m_fActivationTable[un_priority][1] = SPEED;
 			}
 			else
 			{
-				m_fActivationTable[un_priority][0] = -SPEED;
-				m_fActivationTable[un_priority][1] = SPEED;
+				m_fActivationTable[un_priority][0] = SPEED;
+				m_fActivationTable[un_priority][1] = -SPEED;
 			}
 		}
 	}

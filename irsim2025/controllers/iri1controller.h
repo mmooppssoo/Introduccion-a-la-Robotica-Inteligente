@@ -27,6 +27,7 @@ private:
 	CEpuckProximitySensor* m_seProx;
    	CGroundSensor* m_seGround;
    	CGroundMemorySensor* m_seGroundMemory;
+	CRealLightSensor* m_seLight;
 	CRealBlueLightSensor* m_seBlueLight;
 	CRealRedLightSensor* m_seRedLight;
 	CBlueBatterySensor* m_seBlueBattery;  

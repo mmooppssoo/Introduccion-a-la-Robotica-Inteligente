@@ -13,7 +13,9 @@ RUN TIME												= 10000
 %%%%%%%%%%%%% ENVIRONMENT %%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-NUMBER OF LIGHT OBJECTS  									= 0
+NUMBER OF LIGHT OBJECTS  									= 1
+LIGHT 1 X POSITION (meters) 				      = 1.275
+LIGHT 1 Y POSITION (meters)					      = 1.275
 NUMBER OF BLUE LIGHT OBJECTS 							= 1
 BLUE LIGHT 1 X POSITION (meters) 				      = -1.275
 BLUE LIGHT 1 Y POSITION (meters)					      = -1.275
@@ -35,7 +37,7 @@ RED LIGHT 7 Y POSITION (meters)					      = 0.675
 RED LIGHT 8 X POSITION (meters) 				      = 1.275
 RED LIGHT 8 Y POSITION (meters)					      = -0.825
 NUMBER OF GROUND AREA 										= 3
-GROUND AREA 1 X POSITION	(meters)					= -0.675
+GROUND AREA 1 X POSITION	(meters)					= -0.975
 GROUND AREA 1 Y POSITION	(meters)					= 1.125
 GROUND AREA 1 RADIUS	(meters)							= 0.15
 GROUND AREA 1 COLOR (0.0 Black, 0.5 Grey)		= 0.5
