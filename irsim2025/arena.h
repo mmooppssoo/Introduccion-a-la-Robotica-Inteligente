@@ -184,6 +184,10 @@ class CArena : public CGeometry
 		virtual void SwitchNearestBlueLight(dVector2 Pos, int n_value);
 		virtual void SwitchNearestRedLight(dVector2 Pos, int n_value);
 
+		// Switch zona gris
+		virtual void SwitchNearestGroundArea(dVector2 Pos, double n_value);
+
+
 	protected:
 		virtual void SetSize(double f_size_x, double f_size_y);
 		virtual void SetResolution(unsigned int un_res_x, unsigned int un_res_y);

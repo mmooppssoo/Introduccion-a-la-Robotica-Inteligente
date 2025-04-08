@@ -793,3 +793,38 @@ void CArena::SwitchNearestRedLight (dVector2 Pos, int n_value)
 
 /*****************************************************************************************************/
 /*****************************************************************************************************/
+
+void CArena::SwitchNearestGroundArea(dVector2 Pos, double n_value)
+{
+    vector<CGroundArea*>::iterator it = m_vecGroundArea.begin();
+    vector<CGroundArea*>::iterator it_nearest;
+
+    double nearestDistance = 0.3;
+    bool groundFound = false;
+
+    while (it != m_vecGroundArea.end()) {
+        double fColor;
+        (*it)->GetColor(&fColor);
+
+        if (fColor == 0.5) {  // Solo considerar zonas grises
+            dVector2 groundAreaPos;
+            (*it)->GetCenter(&groundAreaPos);
+
+            double distance = sqrt(pow(groundAreaPos.x - Pos.x, 2) + pow(groundAreaPos.y - Pos.y, 2));
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                it_nearest = it;
+                groundFound = true;
+            }
+        }
+        ++it;
+    }
+
+    if (groundFound) {
+        (*it_nearest)->SetColor(n_value); // Cambia la zona gris mas cercana al parametro que le pasamos
+    }
+}
+
+
+
+ 

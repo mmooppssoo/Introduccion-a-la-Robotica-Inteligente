@@ -27,9 +27,12 @@ double* CGroundSensor::ComputeSensorReadings(CEpuck* pc_epuck, CSimulator* pc_si
 	vPosition.y = (pc_epuck->GetPosition()).y;
 	double fOrientation;
 	fOrientation = (pc_epuck->GetRotation());
+
+	CArena* pcArena = pc_simulator->GetArena();
+	m_pcArena = pc_simulator->GetArena();
+	m_pcEpuck = pc_epuck;
 	
 	/* Get Color of the place where the epuck is */
-	CArena* pcArena = pc_simulator->GetArena();
 	double* fSensor;
 	fSensor = pcArena->GetGroundAreaColor(vPosition,fOrientation);
 
@@ -71,3 +74,17 @@ unsigned int CGroundSensor::GetType(){
 	///* Get NAME of the place where the epuck is */
 	//return m_pcArena->GetGroundAreaName(vPosition,fOrientation);
 //}
+
+/******************************************************************************/
+/******************************************************************************/
+
+void CGroundSensor::SwitchNearestGroundArea ( double n_value )
+{
+	dVector2 vPosition;
+	vPosition.x = (m_pcEpuck->GetPosition()).x; 
+	vPosition.y = (m_pcEpuck->GetPosition()).y;
+
+	m_pcArena->SwitchNearestGroundArea(vPosition, n_value);
+}
+
+

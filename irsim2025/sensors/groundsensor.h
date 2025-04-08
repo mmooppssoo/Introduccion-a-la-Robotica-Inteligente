@@ -37,9 +37,13 @@ public:
 		double* GetSensorReading( CEpuck *pc_epuck);
 		
 		char* getGroundAreaName( CEpuck *pc_epuck );
+
+		void SwitchNearestGroundArea( double n_value );
     
 		static unsigned int SENSOR_NUMBER;
 protected:
+	CArena* m_pcArena;
+	CEpuck* m_pcEpuck;
 };
 
 /******************************************************************************/

@@ -36,19 +36,27 @@ RED LIGHT 7 X POSITION (meters) 				      = 0.225
 RED LIGHT 7 Y POSITION (meters)					      = 0.675
 RED LIGHT 8 X POSITION (meters) 				      = 1.275
 RED LIGHT 8 Y POSITION (meters)					      = -0.825
-NUMBER OF GROUND AREA 										= 3
+NUMBER OF GROUND AREA 										= 5
 GROUND AREA 1 X POSITION	(meters)					= -0.975
 GROUND AREA 1 Y POSITION	(meters)					= 1.125
 GROUND AREA 1 RADIUS	(meters)							= 0.15
 GROUND AREA 1 COLOR (0.0 Black, 0.5 Grey)		= 0.5
 GROUND AREA 2 X POSITION	(meters)					= 1.275
 GROUND AREA 2 Y POSITION	(meters)					= -1.275
-GROUND AREA 2 RADIUS	(meters)							= 0.075
+GROUND AREA 2 RADIUS	(meters)							= 0.15
 GROUND AREA 2 COLOR (0.0 Black, 0.5 Grey)		= 0.5
-GROUND AREA 3 X POSITION	(meters)					= 1.275
-GROUND AREA 3 Y POSITION	(meters)					= 1.275
-GROUND AREA 3 RADIUS	(meters)							= 0.075
-GROUND AREA 3 COLOR (0.0 Black, 0.5 Grey)		= 0.0
+GROUND AREA 3 X POSITION	(meters)					= -0.525
+GROUND AREA 3 Y POSITION	(meters)					= -0.375
+GROUND AREA 3 RADIUS	(meters)							= 0.15
+GROUND AREA 3 COLOR (0.0 Black, 0.5 Grey)		= 0.5
+GROUND AREA 4 X POSITION	(meters)					= 0.975
+GROUND AREA 4 Y POSITION	(meters)					= -0.225
+GROUND AREA 4 RADIUS	(meters)							= 0.15
+GROUND AREA 4 COLOR (0.0 Black, 0.5 Grey)		= 0.5
+GROUND AREA 5 X POSITION	(meters)					= 1.275
+GROUND AREA 5 Y POSITION	(meters)					= 1.275
+GROUND AREA 5 RADIUS	(meters)							= 0.075
+GROUND AREA 5 COLOR (0.0 Black, 0.5 Grey)		= 0.0
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

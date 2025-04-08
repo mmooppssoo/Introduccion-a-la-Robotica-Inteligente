@@ -364,7 +364,10 @@ void CIri1Controller::Rescue ( unsigned int un_priority )
 	if ( groundMemory[0]  == 1.0 )
 	{
 		/* Set Leds to YELLOW */
-		m_pcEpuck->SetAllColoredLeds(	LED_COLOR_YELLOW);
+		m_pcEpuck->SetAllColoredLeds(LED_COLOR_YELLOW);
+
+		/* Apagar zona gris */
+		m_seGround->SwitchNearestGroundArea(1.0);
 		
 		/* If not pointing to the light */
 		if ( ( light[0] * light[7] == 0.0 ) )
@@ -409,7 +412,7 @@ void CIri1Controller::FightFire ( unsigned int un_priority )
 	double* battery = m_seBlueBattery->GetSensorReading(m_pcEpuck);
 
 	double fTotalLight = 0.0;
-	for ( int i = 0 ; i < m_seBlueLight->GetNumberOfInputs() ; i ++ )
+	for ( int i = 0 ; i < m_seRedLight->GetNumberOfInputs() ; i ++ )
 	{
 		fTotalLight += light[i];
 	}
@@ -427,18 +430,14 @@ void CIri1Controller::FightFire ( unsigned int un_priority )
 		m_seBlueBattery->SetBatteryLevel(newBattery);
 	}
 
-	// if (m_nWriteToFile){
-	// 	/* INIT WRITE TO FILE */
-	// 	FILE* fileOutput = fopen("outputFiles/fightFireOutput", "a");
-	// 	if (fileOutput != NULL){
-	// 		fprintf(fileOutput, "%2.4f %2.4f ", m_fTime, newBattery);
-	// 		for (int i = 0; i < m_seRedLight->GetNumberOfInputs(); i++){
-	// 			fprintf(fileOutput, "%2.4f ", light[i]);
-	// 		}
-	// 		fprintf(fileOutput, "%2.4f %2.4f %2.4f\n", m_fActivationTable[un_priority][2], m_fActivationTable[un_priority][0], m_fActivationTable[un_priority][1]);
-	// 		fclose(fileOutput); 
-	// 	}
-	// 	/* END WRITE TO FILE */
-	// }
+	if (m_nWriteToFile ) 
+	{
+		/* INIT WRITE TO FILE */
+		FILE* fileOutput = fopen("outputFiles/fightFireOutput", "a");
+		fprintf(fileOutput, "%2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f ", m_fTime, battery[0], light[0], light[1], light[2], light[3], light[4], light[5], light[6], light[7]);
+		fprintf(fileOutput, "%2.4f %2.4f %2.4f\n",m_fActivationTable[un_priority][2], m_fActivationTable[un_priority][0], m_fActivationTable[un_priority][1]);
+		fclose(fileOutput);
+		/* END WRITE TO FILE */
+	}
 
 }
