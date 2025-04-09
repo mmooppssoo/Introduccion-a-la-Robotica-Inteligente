@@ -806,7 +806,7 @@ void CArena::SwitchNearestGroundArea(dVector2 Pos, double n_value)
         double fColor;
         (*it)->GetColor(&fColor);
 
-        if (fColor == 0.5) {  // Solo considerar zonas grises
+        if (fColor == 0.5) {  
             dVector2 groundAreaPos;
             (*it)->GetCenter(&groundAreaPos);
 
@@ -821,7 +821,7 @@ void CArena::SwitchNearestGroundArea(dVector2 Pos, double n_value)
     }
 
     if (groundFound) {
-        (*it_nearest)->SetColor(n_value); // Cambia la zona gris mas cercana al parametro que le pasamos
+        (*it_nearest)->SetColor(n_value); 
     }
 }
 
