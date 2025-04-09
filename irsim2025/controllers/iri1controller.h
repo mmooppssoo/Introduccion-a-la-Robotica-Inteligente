@@ -40,6 +40,8 @@ private:
    	int 		m_nWriteToFile;
    	double 		m_fTime;
 	double 		newBattery;
+	double      fRescueToFightFireInhibitor;
+	double      fRescueToLoadWaterInhibitor;
 
    	/* Functions */
    	void ExecuteBehaviors ( void );
