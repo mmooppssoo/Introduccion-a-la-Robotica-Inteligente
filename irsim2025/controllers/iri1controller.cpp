@@ -39,13 +39,11 @@ using namespace std;
 
 /******************** Constants **************/
 /* Threshold to avoid obstacles */
-#define PROXIMITY_THRESHOLD 0.6
+#define PROXIMITY_THRESHOLD 0.7
 /* Threshold to define the battery discharged */
 #define BATTERY_THRESHOLD 0.499999
 /* Threshold to fight fires */
 #define FIGHT_FIRE_THRESHOLD 0.1
-/* Threshold to reduce the speed of the robot */
-#define NAVIGATE_LIGHT_THRESHOLD 0.9 //REVISAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAR
 
 #define SPEED 500
 
@@ -114,10 +112,6 @@ void CIri1Controller::SimulationStep(unsigned n_step_number, double f_time, doub
 	/* Set Speed to wheels */
 	m_acWheels->SetSpeed(m_fLeftSpeed, m_fRightSpeed);
 
-	/* Leer Sensores de Bateria Azul */
-	double* battery = m_seBlueBattery->GetSensorReading(m_pcEpuck);
-	printf("Bateria: %f",battery[0]);
-
 	if (m_nWriteToFile ) 
 	{
 	/* INIT: WRITE TO FILES */
@@ -150,7 +144,7 @@ void CIri1Controller::ExecuteBehaviors ( void )
 	fRescueToLoadWaterInhibitor = 1.0;
 
 	/* Set Leds to BLACK */
-	m_pcEpuck->SetAllColoredLeds(	LED_COLOR_BLUE);
+	m_pcEpuck->SetAllColoredLeds(LED_COLOR_BLACK);
 	
 	ObstacleAvoidance ( AVOID_PRIORITY );
 	Rescue ( RESCUE_PRIORITY );
@@ -195,7 +189,7 @@ void CIri1Controller::Coordinator ( void )
 void CIri1Controller::ObstacleAvoidance ( unsigned int un_priority )
 {
 	
-	/* Leer Sensores de Proximidad */
+	/* Read Proximity Sensors */
 	double* prox = m_seProx->GetSensorReading(m_pcEpuck);
 
 	double fMaxProx = 0.0;
@@ -262,7 +256,7 @@ void CIri1Controller::ObstacleAvoidance ( unsigned int un_priority )
 
 void CIri1Controller::Navigate ( unsigned int un_priority )
 {
-	
+	/* Go Straight */
 	m_fActivationTable[un_priority][0] = SPEED;
 	m_fActivationTable[un_priority][1] = SPEED;
 	
@@ -285,12 +279,13 @@ void CIri1Controller::Navigate ( unsigned int un_priority )
 
 void CIri1Controller::LoadWater( unsigned int un_priority )
 {
-	/* Leer Sensores de Bateria Azul */
+	/* Read Blue Battery Sensor */
 	double* battery = m_seBlueBattery->GetSensorReading(m_pcEpuck);
 		
-	/* Leer Sensores de Luz Azul */
+	/* Read Blue Light Sensor */
 	double* light = m_seBlueLight->GetSensorReading(m_pcEpuck);
 
+	/* If low battery and not inhibited */
 	if ( battery[0] < BATTERY_THRESHOLD && fRescueToLoadWaterInhibitor == 1.0)
 	{
 		/* Set Leds to RED */
@@ -320,7 +315,7 @@ void CIri1Controller::LoadWater( unsigned int un_priority )
 	if (m_nWriteToFile ) 
 	{
 		/* INIT WRITE TO FILE */
-		FILE* fileOutput = fopen("outputFiles/batteryOutput", "a");
+		FILE* fileOutput = fopen("outputFiles/waterOutput", "a");
 		fprintf(fileOutput, "%2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f ", m_fTime, fRescueToLoadWaterInhibitor, battery[0], light[0], light[1], light[2], light[3], light[4], light[5], light[6], light[7]);
 		fprintf(fileOutput, "%2.4f %2.4f %2.4f\n",m_fActivationTable[un_priority][2], m_fActivationTable[un_priority][0], m_fActivationTable[un_priority][1]);
 		fclose(fileOutput);
@@ -333,23 +328,24 @@ void CIri1Controller::LoadWater( unsigned int un_priority )
 
 void CIri1Controller::Rescue ( unsigned int un_priority )
 {
-	/* Leer Sensores de Suelo Memory */
+	/* Read Ground Memory Sensor */
 	double* groundMemory = m_seGroundMemory->GetSensorReading(m_pcEpuck);
 	
-	/* Leer Sensores de Luz */
+	/* Read Light Sensor */
 	double* light = m_seLight->GetSensorReading(m_pcEpuck);
 	
-	/* Si recoge a una persona */
+	/* If pick up a person */
 	if ( groundMemory[0]  == 1.0 )
 	{
 
+		/* Activate Inhinitors */
 		fRescueToFightFireInhibitor = 0.0;
 		fRescueToLoadWaterInhibitor = 0.0;
 
 		/* Set Leds to YELLOW */
 		m_pcEpuck->SetAllColoredLeds(LED_COLOR_YELLOW);
 
-		/* Apagar zona gris */
+		/* Switch nearest ground area to white*/
 		m_seGround->SwitchNearestGroundArea(1.0);
 		
 		/* If not pointing to the light */
@@ -375,7 +371,7 @@ void CIri1Controller::Rescue ( unsigned int un_priority )
 	if (m_nWriteToFile ) 
 	{
 		/* INIT WRITE TO FILE */
-		FILE* fileOutput = fopen("outputFiles/forageOutput", "a");
+		FILE* fileOutput = fopen("outputFiles/rescueOutput", "a");
 		fprintf(fileOutput, "%2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f ", m_fTime, groundMemory[0], light[0], light[1], light[2], light[3], light[4], light[5], light[6], light[7]);
 		fprintf(fileOutput, "%2.4f %2.4f %2.4f\n",m_fActivationTable[un_priority][2], m_fActivationTable[un_priority][0], m_fActivationTable[un_priority][1]);
 		fclose(fileOutput);
@@ -388,10 +384,10 @@ void CIri1Controller::Rescue ( unsigned int un_priority )
 
 void CIri1Controller::FightFire ( unsigned int un_priority )
 {
-	/* Leer Sensores de Luz Roja */
-	 double* light = m_seRedLight->GetSensorReading(m_pcEpuck);
+	/* Read Red Light Sensor */
+	double* light = m_seRedLight->GetSensorReading(m_pcEpuck);
 
-	/* Leer Sensores de Bateria Azul */
+	/* Read Blue Battery Sensor */
 	double* battery = m_seBlueBattery->GetSensorReading(m_pcEpuck);
 
 	double fTotalLight = 0.0;
@@ -400,15 +396,18 @@ void CIri1Controller::FightFire ( unsigned int un_priority )
 		fTotalLight += light[i];
 	}
 
-	/* Si se acerca a un fuego, hay suficiente agua y no esta rescatando*/
+	/* If aproach a red light, enough blue battery and not inhibited*/
 	if ((fTotalLight >= FIGHT_FIRE_THRESHOLD) && (battery[0] >= BATTERY_THRESHOLD) && (fRescueToFightFireInhibitor == 1.0)){
 
 		m_fActivationTable[un_priority][2] = 1.0;
 
-		/* Apaga el fuego */
+		/* Set Leds to BLUE */
+		m_pcEpuck->SetAllColoredLeds(LED_COLOR_BLUE);
+
+		/* Switch Red Light off */
 		m_seRedLight->SwitchNearestLight(0);
 
-		/* Gasta medio tanque de agua*/
+		/* Use half of the total Blue Battery*/
 		newBattery = battery[0] - 0.5;
 		m_seBlueBattery->SetBatteryLevel(newBattery);
 	}
@@ -416,7 +415,7 @@ void CIri1Controller::FightFire ( unsigned int un_priority )
 	if (m_nWriteToFile ) 
 	{
 		/* INIT WRITE TO FILE */
-		FILE* fileOutput = fopen("outputFiles/fightFireOutput", "a");
+		FILE* fileOutput = fopen("outputFiles/fireOutput", "a");
 		fprintf(fileOutput, "%2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f %2.4f ", m_fTime, fRescueToFightFireInhibitor, battery[0], light[0], light[1], light[2], light[3], light[4], light[5], light[6], light[7]);
 		fprintf(fileOutput, "%2.4f %2.4f %2.4f\n",m_fActivationTable[un_priority][2], m_fActivationTable[un_priority][0], m_fActivationTable[un_priority][1]);
 		fclose(fileOutput);
