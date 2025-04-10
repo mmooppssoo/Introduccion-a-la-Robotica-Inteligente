@@ -288,8 +288,8 @@ void CIri1Controller::LoadWater( unsigned int un_priority )
 	/* If low battery and not inhibited */
 	if ( battery[0] < BATTERY_THRESHOLD && fRescueToLoadWaterInhibitor == 1.0)
 	{
-		/* Set Leds to RED */
-		m_pcEpuck->SetAllColoredLeds(	LED_COLOR_RED);
+		/* Set Leds to BLUE */
+		m_pcEpuck->SetAllColoredLeds(LED_COLOR_BLUE);
 		
 		/* If not pointing to the light */
 		if ( ( light[0] * light[7] == 0.0 ) )
@@ -401,8 +401,8 @@ void CIri1Controller::FightFire ( unsigned int un_priority )
 
 		m_fActivationTable[un_priority][2] = 1.0;
 
-		/* Set Leds to BLUE */
-		m_pcEpuck->SetAllColoredLeds(LED_COLOR_BLUE);
+		/* Set Leds to RED */
+		m_pcEpuck->SetAllColoredLeds(LED_COLOR_RED);
 
 		/* Switch Red Light off */
 		m_seRedLight->SwitchNearestLight(0);
