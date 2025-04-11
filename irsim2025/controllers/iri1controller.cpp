@@ -170,14 +170,14 @@ void CIri1Controller::Coordinator ( void )
 	m_fLeftSpeed = m_fActivationTable[nBehavior][0];
 	m_fRightSpeed = m_fActivationTable[nBehavior][1];
 	
-  printf("%d %2.4f %2.4f \n", nBehavior, m_fLeftSpeed, m_fRightSpeed);
+  printf("%2.4f %d  \n", m_fTime, nBehavior);
 	
   if (m_nWriteToFile ) 
 	{
 		/* INIT: WRITE TO FILES */
 		/* Write coordinator ouputs */
 		FILE* fileOutput = fopen("outputFiles/coordinatorOutput", "a");
-		fprintf(fileOutput,"%2.4f %d %2.4f %2.4f \n", m_fTime, nBehavior, m_fLeftSpeed, m_fRightSpeed);
+		fprintf(fileOutput,"%2.4f %d \n", m_fTime, nBehavior);
 		fclose(fileOutput);
 		/* END WRITE TO FILES */
 	}
