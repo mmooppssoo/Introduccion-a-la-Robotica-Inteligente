@@ -14,8 +14,8 @@ RUN TIME							= 10000
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 NUMBER OF LIGHT OBJECTS  					= 1
-LIGHT 1 X POSITION (meters) 				= -1.5
-LIGHT 1 Y POSITION (meters)					= -1.5
+LIGHT 1 X POSITION (meters) 				= -1.275
+LIGHT 1 Y POSITION (meters)					= -1.275
 NUMBER OF BLUE LIGHT OBJECTS 				= 0
 NUMBER OF RED LIGHT OBJECTS 				= 3
 RED LIGHT 1 X POSITION (meters) 			= 0.975

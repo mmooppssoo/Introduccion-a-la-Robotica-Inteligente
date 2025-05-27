@@ -262,88 +262,77 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
 
-/*ENCODERS*/
-/* Definir parametros */
-const double METRO = 1.0; 
-const double GIRO_90_RADIANES = M_PI / 2.0; 
+	/* 1.   calculo de posicion del robot con encoders */
+	/* Obtener desplazamiento y cambio de orientacion */
+	double dl = m_fEncoder[0];  
+	double dr = m_fEncoder[1];  
+	double dc = (dl + dr) / 2.0;
+	double dtheta = (dr - dl) / 0.053; 
 
-static double distancia_recorrida = 0.0;
-static double angulo_recorrido = 0.0;
+	/* Primera lectura: usar valores reales para ubicar la posicion y orientacion iniciales */
+	m_fOrient = 0.0;
+	m_fX = m_pcEpuck->GetPosition().x;
+	m_fY = m_pcEpuck->GetPosition().y;
 
+	/* Actualizacion de la posicion y orientacion con encoders */
+	m_fOrient += dtheta;
+	if (m_fOrient> 2 * M_PI) m_fOrient -= 2 * M_PI;
+	if (m_fOrient < 0) m_fOrient += 2 * M_PI;
+	m_fX += dc * cos(m_fOrient);
+	m_fY += dc * sin(m_fOrient);
 
-/* Obtener desplazamiento y cambio de orientacion */
-double dl = m_fEncoder[0];  
-double dr = m_fEncoder[1];  
-double dc = (dl + dr) / 2.0;
-double dtheta = (dr - dl) / 0.053; 
+	const double CELL = 0.05;        // rejilla de 5 cm
+	int ix = (int) floor( (m_fX + 1.5) / CELL );   // 3×3 arena centrada en 0
+	int iy = (int) floor( (1.5 - m_fY) / CELL );
+	long long key = ((long long)ix << 20) | iy;    // empaqueta dos int en 64 bit
+	int v = ++m_Visited[key];                      // incrementa visitas
 
-/* Primera lectura: usar valores reales para ubicar la posicion y orientacion iniciales */
-  m_fOrient = 0.0;
-  m_fX = m_pcEpuck->GetPosition().x;
-  m_fY = m_pcEpuck->GetPosition().y;
+	/* 2.   progreso hacia la meta */
+	static double bestY = 0.0;     // reseteamos al iniciar episodio
+	static bool   first = true;
+	if(first){ bestY = 0.0; first = false; }
 
-  /* Actualizacion de la posicion y orientacion con encoders */
-  m_fOrient += dtheta;
-  if (m_fOrient> 2 * M_PI) m_fOrient -= 2 * M_PI;
-  if (m_fOrient < 0) m_fOrient += 2 * M_PI;
-  m_fX += dc * cos(m_fOrient);
-  m_fY += dc * sin(m_fOrient);
+	double Y      = maxLightSensorEval;
+	double deltaY = (Y > bestY + 1e-3) ? (Y - bestY) : 0.0;
+	if(deltaY > 0) bestY = Y;
 
-  const double CELL = 0.05;        // rejilla de 5 cm
-const int    MAX_VISITS = 3;    // toleramos 3 pasos en la misma celda
-const double P_REVISIT = 0.3;    // penaliza al 30 % si se pasa
+	/* 3.   velocidad recta hacia delante */
+	double vMax = m_pcEpuck->GetMaxWheelSpeed();
+	double vL, vR; m_pcEpuck->GetWheelSpeed(&vL,&vR);
 
-int ix = (int) floor( (m_fX + 1.5) / CELL );   // 3×3 arena centrada en 0
-int iy = (int) floor( (1.5 - m_fY) / CELL );
-long long key = ((long long)ix << 20) | iy;    // empaqueta dos int en 64 bit
-int v = ++m_Visited[key];                      // incrementa visitas
+	double forward  = (fmax(vL,0.0)+fmax(vR,0.0)) / (2.0*vMax);
+	double straight = 1.0 - fabs(vL - vR)         / (2.0*vMax);
+	double Fwd      = forward * straight;                   // 0-1
 
-	/* 1.   progreso hacia la meta */
-static double bestY = 0.0;     // reseteamos al iniciar episodio
-static bool   first = true;
-if(first){ bestY = 0.0; first = false; }
+	/* 4.   wallFactor dependiente de δY */
+	double rightWall  = m_fProx[2];
+	double wallGauss  = exp( -pow(rightWall - 0.70,2)/(2*0.08*0.08) );
+	double wallFactor = (deltaY > 0 ? 0.5 + 0.5*wallGauss : 0.5);
 
-double Y      = maxLightSensorEval;
-double deltaY = (Y > bestY + 1e-3) ? (Y - bestY) : 0.0;
-if(deltaY > 0) bestY = Y;
+	/* 5.   penalizaciones */
+	double P = std::max(m_fProx[0], m_fProx[7]);
+	double R = *std::max_element(m_fRed, m_fRed+8);
+	double wallSafe = 1.0 - P;
+	double redSafe  = 1.0 - R;
 
-/* 2.   velocidad recta hacia delante */
-double vMax = m_pcEpuck->GetMaxWheelSpeed();
-double vL, vR; m_pcEpuck->GetWheelSpeed(&vL,&vR);
+	/* 6.   fitness base */
+	double fitness = (0.7*deltaY + 0.2*Fwd + 0.1*wallFactor) * wallSafe * redSafe;
 
-double forward  = (fmax(vL,0.0)+fmax(vR,0.0)) / (2.0*vMax);
-double straight = 1.0 - fabs(vL - vR)         / (2.0*vMax);
-double Fwd      = forward * straight;                   // 0-1
+	/* 7.   castigo por revisitar celdas */
+	const int    MAX_VISITS = 2;    // toleramos 2 pasos en la misma celda
+	const double P_REVISIT = 0.1;    // penaliza al 10 % si se pasa
+	if(v > MAX_VISITS) fitness *= P_REVISIT;
 
-/* 3.   muros y rojo */
-double P = fmax(m_fProx[0], m_fProx[7]);              // obstáculo frente
-double R = *std::max_element(m_fRed, m_fRed+8);       // luz roja
+	/* 8.   decaimiento temporal (fuerza a progresar) */
+	fitness *= 0.999;
 
-double wallSafe = 1.0 - P;           // 1 libre  →  0 pegado
-double redSafe  = 1.0 - R;           // 1 lejos  →  0 encima
+	/* 9.   eventos terminales */
+	bool goal   = (Y > 0.95);
+	bool fallen = (groundMemory && groundMemory[0] > 0.5);
+	if(goal)   fitness = 1.0;
+	if(fallen) fitness = 0.0;
 
-/* 4.   seguir pared derecha (sensor 2) */
-double rightWall = m_fProx[2];
-double wallGauss = exp( -pow(rightWall - 0.70,2) / (2*0.08*0.08) );
-double wallFactor = 0.5 + 0.5*wallGauss;              // 0.5–1.0
-
-/* 5.   fitness instantánea */
-double fitness = (0.5*deltaY + 0.5*Fwd) *
-                 wallSafe * redSafe * wallFactor;
-
-if(v > MAX_VISITS){
-	fitness *= P_REVISIT;      // castigo suave pero acumulativo
-}
-
-/* 6.   eventos terminales */
-bool goal   = (Y > 0.95);
-bool fallen = (groundMemory && groundMemory[0] > 0.5);
-
-if(goal)   fitness = 1.0;
-if(fallen) fitness = 0.0;
-
-m_bGoalReached |= goal;
-/****************  END SIMPLE + WALL  ****************/
+	m_bGoalReached |= goal;
 	
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
 
