@@ -282,8 +282,8 @@ irifitnessfunction.o: irifitnessfunction.cpp /usr/include/stdc-predef.h \
  ../collisions/collisioncallback.h ../objects/groundarea.h \
  ../objects/lightobject.h ../objects/bluelightobject.h \
  ../objects/redlightobject.h ../sensor.h ../actuator.h ../controller.h \
- ../simulator.h ../collisions/collisionmanager.h \
- ../sensors/encodersensor.h ../sensor.h ../arena.h ../random.h
+ ../simulator.h ../sensors/encodersensor.h ../sensor.h ../arena.h \
+ ../random.h ../collisions/collisionmanager.h
 /usr/include/stdc-predef.h:
 irifitnessfunction.h:
 /usr/include/c++/13/math.h:
@@ -671,8 +671,8 @@ irifitnessfunction.h:
 ../actuator.h:
 ../controller.h:
 ../simulator.h:
-../collisions/collisionmanager.h:
 ../sensors/encodersensor.h:
 ../sensor.h:
 ../arena.h:
 ../random.h:
+../collisions/collisionmanager.h:

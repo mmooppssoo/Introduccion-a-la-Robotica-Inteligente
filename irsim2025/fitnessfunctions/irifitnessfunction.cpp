@@ -244,10 +244,59 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 					}
 				}
 				break;
+			/* If sensor is ENCODER */
+			case SENSOR_ENCODER:
+				/* Get number of inputs */
+				unThisSensorsNumberOfInputs = (*i)->GetNumberOfInputs();
+				/* Get actual values */
+				pfThisSensorInputs = (*i)->GetComputedSensorReadings();
+
+				/* For every input */
+				for (int j = 0; j < unThisSensorsNumberOfInputs; j++)
+				{
+					m_fEncoder[j] = pfThisSensorInputs[j];
+				}
+				break;
 		}
 	}
 	
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
+
+/*ENCODERS*/
+/* Definir parametros */
+const double METRO = 1.0; 
+const double GIRO_90_RADIANES = M_PI / 2.0; 
+
+static double distancia_recorrida = 0.0;
+static double angulo_recorrido = 0.0;
+
+
+/* Obtener desplazamiento y cambio de orientacion */
+double dl = m_fEncoder[0];  
+double dr = m_fEncoder[1];  
+double dc = (dl + dr) / 2.0;
+double dtheta = (dr - dl) / 0.053; 
+
+/* Primera lectura: usar valores reales para ubicar la posicion y orientacion iniciales */
+  m_fOrient = 0.0;
+  m_fX = m_pcEpuck->GetPosition().x;
+  m_fY = m_pcEpuck->GetPosition().y;
+
+  /* Actualizacion de la posicion y orientacion con encoders */
+  m_fOrient += dtheta;
+  if (m_fOrient> 2 * M_PI) m_fOrient -= 2 * M_PI;
+  if (m_fOrient < 0) m_fOrient += 2 * M_PI;
+  m_fX += dc * cos(m_fOrient);
+  m_fY += dc * sin(m_fOrient);
+
+  const double CELL = 0.05;        // rejilla de 5 cm
+const int    MAX_VISITS = 3;    // toleramos 3 pasos en la misma celda
+const double P_REVISIT = 0.3;    // penaliza al 30 % si se pasa
+
+int ix = (int) floor( (m_fX + 1.5) / CELL );   // 3×3 arena centrada en 0
+int iy = (int) floor( (1.5 - m_fY) / CELL );
+long long key = ((long long)ix << 20) | iy;    // empaqueta dos int en 64 bit
+int v = ++m_Visited[key];                      // incrementa visitas
 
 	/* 1.   progreso hacia la meta */
 static double bestY = 0.0;     // reseteamos al iniciar episodio
@@ -281,6 +330,10 @@ double wallFactor = 0.5 + 0.5*wallGauss;              // 0.5–1.0
 /* 5.   fitness instantánea */
 double fitness = (0.5*deltaY + 0.5*Fwd) *
                  wallSafe * redSafe * wallFactor;
+
+if(v > MAX_VISITS){
+	fitness *= P_REVISIT;      // castigo suave pero acumulativo
+}
 
 /* 6.   eventos terminales */
 bool goal   = (Y > 0.95);
