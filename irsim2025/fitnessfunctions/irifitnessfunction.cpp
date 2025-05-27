@@ -30,6 +30,7 @@ CIriFitnessFunction::CIriFitnessFunction(const char* pch_name,
 
 	m_unNumberOfSteps = 0;
 	m_fComputedFitness = 0.0;
+	m_bGoalReached       = false;
 	
 }
 
@@ -54,7 +55,11 @@ double CIriFitnessFunction::GetFitness()
 	/* If fitness less than 0, put it to 0 */
 	if ( fit < 0.0 ) fit = 0.0;
 
-	return fit;
+	/* If fitness more than 1, put it to 1 */
+	if ( fit > 1.0 ) fit = 1.0;
+
+	return fit;   
+
 }
 
 /******************************************************************************/
@@ -105,6 +110,8 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double *blueBattery;
 	/* whre the RED BATTERY will be sotored */
 	double *redBattery;
+	/* whre the PROXIMITY will be sotored */
+	double *prox;
 
 	double blueLightS0=0;
 	double blueLightS7=0;
@@ -132,6 +139,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 				/* For every input */
 				for (int j = 0; j < unThisSensorsNumberOfInputs; j++)
 				{
+					m_fProx[j] = pfThisSensorInputs[j];
 					/* If reading bigger than maximum */
 					if ( pfThisSensorInputs[j] > maxProxSensorEval )
 					{	
@@ -197,6 +205,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 
 				for (int j = 0; j < unThisSensorsNumberOfInputs; j++)
 				{
+					m_fRed[j] = pfThisSensorInputs[j];
 					if ( pfThisSensorInputs[j] > maxRedLightSensorEval )
 					{	
 						maxRedLightSensorEval = pfThisSensorInputs[j];
@@ -240,7 +249,48 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
 
-	double fitness = 1.0;
+	/* 1.   progreso hacia la meta */
+static double bestY = 0.0;     // reseteamos al iniciar episodio
+static bool   first = true;
+if(first){ bestY = 0.0; first = false; }
+
+double Y      = maxLightSensorEval;
+double deltaY = (Y > bestY + 1e-3) ? (Y - bestY) : 0.0;
+if(deltaY > 0) bestY = Y;
+
+/* 2.   velocidad recta hacia delante */
+double vMax = m_pcEpuck->GetMaxWheelSpeed();
+double vL, vR; m_pcEpuck->GetWheelSpeed(&vL,&vR);
+
+double forward  = (fmax(vL,0.0)+fmax(vR,0.0)) / (2.0*vMax);
+double straight = 1.0 - fabs(vL - vR)         / (2.0*vMax);
+double Fwd      = forward * straight;                   // 0-1
+
+/* 3.   muros y rojo */
+double P = fmax(m_fProx[0], m_fProx[7]);              // obstáculo frente
+double R = *std::max_element(m_fRed, m_fRed+8);       // luz roja
+
+double wallSafe = 1.0 - P;           // 1 libre  →  0 pegado
+double redSafe  = 1.0 - R;           // 1 lejos  →  0 encima
+
+/* 4.   seguir pared derecha (sensor 2) */
+double rightWall = m_fProx[2];
+double wallGauss = exp( -pow(rightWall - 0.70,2) / (2*0.08*0.08) );
+double wallFactor = 0.5 + 0.5*wallGauss;              // 0.5–1.0
+
+/* 5.   fitness instantánea */
+double fitness = (0.5*deltaY + 0.5*Fwd) *
+                 wallSafe * redSafe * wallFactor;
+
+/* 6.   eventos terminales */
+bool goal   = (Y > 0.95);
+bool fallen = (groundMemory && groundMemory[0] > 0.5);
+
+if(goal)   fitness = 1.0;
+if(fallen) fitness = 0.0;
+
+m_bGoalReached |= goal;
+/****************  END SIMPLE + WALL  ****************/
 	
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
 

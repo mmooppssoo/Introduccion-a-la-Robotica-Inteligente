@@ -8,12 +8,17 @@
 #include <vector>
 #include <list>
 #include "general.h"
+#include <cmath>
+#include <algorithm>
+#include <unordered_map>
+#include <utility>          // std::pair
 using namespace std;
 
 class CIriFitnessFunction;
 
 #include "fitnessfunction.h"
 #include "simulator.h"
+#include "encodersensor.h"
 
 /******************************************************************************/
 /******************************************************************************/
@@ -30,7 +35,17 @@ public:
 protected:
 		unsigned int m_unNumberOfSteps;
 		double 			m_fComputedFitness;
+		bool m_bGoalReached;
 		CEpuck* m_pcEpuck;
+		double m_fProx[8];
+		double m_fRed[8];
+		/* --- odometría --- */
+		CEncoderSensor*  m_pcEnc;        // puntero al sensor
+		double           m_fOrient;      // orientación acumulada
+		double           m_fX, m_fY;     // posición acumulada
+	
+		/* --- mapa de visitas --- */
+		std::unordered_map<long long,int> m_Visited;  // key = (ix<<20)|iy
 
 };
 
