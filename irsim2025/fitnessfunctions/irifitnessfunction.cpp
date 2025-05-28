@@ -289,10 +289,10 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 
 	/* 2.   progreso hacia la meta */
 	static double bestY = 0.0;     // reseteamos al iniciar episodio
-	static bool   first = true;
+	static bool first = true;
 	if(first){ bestY = 0.0; first = false; }
 
-	double Y      = maxLightSensorEval;
+	double Y = maxLightSensorEval;
 	double deltaY = (Y > bestY + 1e-3) ? (Y - bestY) : 0.0;
 	if(deltaY > 0) bestY = Y;
 
@@ -300,26 +300,26 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double vMax = m_pcEpuck->GetMaxWheelSpeed();
 	double vL, vR; m_pcEpuck->GetWheelSpeed(&vL,&vR);
 
-	double forward  = (fmax(vL,0.0)+fmax(vR,0.0)) / (2.0*vMax);
-	double straight = 1.0 - fabs(vL - vR)         / (2.0*vMax);
-	double Fwd      = forward * straight;                   // 0-1
+	double forward = (fmax(vL,0.0)+fmax(vR,0.0)) / (2.0*vMax);
+	double straight = 1.0 - fabs(vL - vR) / (2.0*vMax);
+	double Fwd = forward * straight;                   // 0-1
 
 	/* 4.   wallFactor dependiente de δY */
-	double rightWall  = m_fProx[2];
-	double wallGauss  = exp( -pow(rightWall - 0.70,2)/(2*0.08*0.08) );
+	double rightWall = m_fProx[2];
+	double wallGauss = exp( -pow(rightWall - 0.70,2)/(2*0.08*0.08) );
 	double wallFactor = (deltaY > 0 ? 0.5 + 0.5*wallGauss : 0.5);
 
 	/* 5.   penalizaciones */
 	double P = std::max(m_fProx[0], m_fProx[7]);
 	double R = *std::max_element(m_fRed, m_fRed+8);
 	double wallSafe = 1.0 - P;
-	double redSafe  = 1.0 - R;
+	double redSafe = 1.0 - R;
 
 	/* 6.   fitness base */
 	double fitness = (0.7*deltaY + 0.2*Fwd + 0.1*wallFactor) * wallSafe * redSafe;
 
 	/* 7.   castigo por revisitar celdas */
-	const int    MAX_VISITS = 2;    // toleramos 2 pasos en la misma celda
+	const int MAX_VISITS = 2;    // toleramos 2 pasos en la misma celda
 	const double P_REVISIT = 0.1;    // penaliza al 10 % si se pasa
 	if(v > MAX_VISITS) fitness *= P_REVISIT;
 
@@ -329,7 +329,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* 9.   eventos terminales */
 	bool goal   = (Y > 0.95);
 	bool fallen = (groundMemory && groundMemory[0] > 0.5);
-	if(goal)   fitness = 1.0;
+	if(goal) fitness = 1.0;
 	if(fallen) fitness = 0.0;
 
 	m_bGoalReached |= goal;

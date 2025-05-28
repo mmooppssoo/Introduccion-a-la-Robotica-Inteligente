@@ -40,6 +40,7 @@ protected:
 		double m_fProx[8];
 		double m_fRed[8];
 		double m_fEncoder[2];
+		double bestY;
 		/* --- odometría --- */
 		CEncoderSensor*  m_pcEnc;        // puntero al sensor
 		double           m_fOrient;      // orientación acumulada
