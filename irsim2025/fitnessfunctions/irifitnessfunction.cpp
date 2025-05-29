@@ -297,12 +297,11 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	if(deltaY > 0) bestY = Y;
 
 	/* 3.   velocidad recta hacia delante */
-	double vMax = m_pcEpuck->GetMaxWheelSpeed();
-	double vL, vR; m_pcEpuck->GetWheelSpeed(&vL,&vR);
-
-	double forward = (fmax(vL,0.0)+fmax(vR,0.0)) / (2.0*vMax);
-	double straight = 1.0 - fabs(vL - vR) / (2.0*vMax);
-	double Fwd = forward * straight;                   // 0-1
+	double backL = (leftSpeed  < 0.5) ? (0.5 - leftSpeed)  : 0.0;
+	double backR = (rightSpeed < 0.5) ? (0.5 - rightSpeed) : 0.0;
+	double forwardPos = (maxSpeedEval - (backL + backR));
+	if (forwardPos < 0) forwardPos = 0.0;
+	double Fwd =  forwardPos * sameDirectionEval; // 0–1
 
 	/* 4.   wallFactor dependiente de δY */
 	double rightWall = m_fProx[2];
