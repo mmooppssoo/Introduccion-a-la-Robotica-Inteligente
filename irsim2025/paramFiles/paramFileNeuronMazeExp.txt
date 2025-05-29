@@ -72,7 +72,7 @@ GROUND SENSORS USED     (3 sensors: 0 OFF, 1 ON)  = 1 1 1
 
 CHROMOSOME LENGTH                              = 52
 POPULATION SIZE                                = 120
-NUMBER OF GENERATIONS                          = 151
+NUMBER OF GENERATIONS                          = 101
 EVALUATION TIME                                = 500
 DO CROSSOVER (0 No, 1 Yes)                     = 1
 NUMBER OF CROSSOVERS (Always 1)                = 1

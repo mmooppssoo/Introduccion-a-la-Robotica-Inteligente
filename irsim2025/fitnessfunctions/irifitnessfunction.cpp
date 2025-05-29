@@ -263,6 +263,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
 
 	/* 1.   calculo de posicion del robot con encoders */
+	
 	/* Obtener desplazamiento y cambio de orientacion */
 	double dl = m_fEncoder[0];  
 	double dr = m_fEncoder[1];  
@@ -288,25 +289,15 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	int v = ++m_Visited[key];                      // incrementa visitas
 
 	/* 2.   progreso hacia la meta */
-	static double bestY = 0.0;     // reseteamos al iniciar episodio
-	static bool first = true;
-	if(first){ bestY = 0.0; first = false; }
-
 	double Y = maxLightSensorEval;
-	double deltaY = (Y > bestY + 1e-3) ? (Y - bestY) : 0.0;
-	if(deltaY > 0) bestY = Y;
 
 	/* 3.   velocidad recta hacia delante */
-	double backL = (leftSpeed  < 0.5) ? (0.5 - leftSpeed)  : 0.0;
-	double backR = (rightSpeed < 0.5) ? (0.5 - rightSpeed) : 0.0;
-	double forwardPos = (maxSpeedEval - (backL + backR));
-	if (forwardPos < 0) forwardPos = 0.0;
-	double Fwd =  forwardPos * sameDirectionEval; // 0–1
+	double Fwd =  maxSpeedEval * sameDirectionEval; // 0–1
 
-	/* 4.   wallFactor dependiente de δY */
+	/* 4.   wallFactor dependiente de Y */
 	double rightWall = m_fProx[2];
 	double wallGauss = exp( -pow(rightWall - 0.70,2)/(2*0.08*0.08) );
-	double wallFactor = (deltaY > 0 ? 0.5 + 0.5*wallGauss : 0.5);
+	double wallFactor = (Y > 0 ? 0.5 + 0.5*wallGauss : 0.5);
 
 	/* 5.   penalizaciones */
 	double P = std::max(m_fProx[0], m_fProx[7]);
@@ -315,7 +306,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double redSafe = 1.0 - R;
 
 	/* 6.   fitness base */
-	double fitness = (0.7*deltaY + 0.2*Fwd + 0.1*wallFactor) * wallSafe * redSafe;
+	double fitness = (0.7*Y + 0.2*Fwd + 0.1*wallFactor) * wallSafe * redSafe;
 
 	/* 7.   castigo por revisitar celdas */
 	const int MAX_VISITS = 2;    // toleramos 2 pasos en la misma celda
