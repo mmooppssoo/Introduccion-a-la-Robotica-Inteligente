@@ -107,16 +107,13 @@ CNNDistributedController::CNNDistributedController(const char* pch_name, CEpuck*
 					case SENSOR_PROXIMITY:
 						m_unNumberOfSensorInputs[i] = m_unProximitySensorsUsedNumber;
 						break;
-					case SENSOR_ENCODER:
-						m_unNumberOfSensorInputs[i] = m_unEncoderSensorsUsedNumber;
-						break;
 					case SENSOR_REAL_LIGHT:
 						m_unNumberOfSensorInputs[i] = m_unLightSensorsUsedNumber;
 						break;
 					case SENSOR_REAL_BLUE_LIGHT:
 						m_unNumberOfSensorInputs[i] = m_unBlueLightSensorsUsedNumber;
 						break;
-          case SENSOR_REAL_RED_LIGHT:
+          			case SENSOR_REAL_RED_LIGHT:
 						m_unNumberOfSensorInputs[i] = m_unRedLightSensorsUsedNumber;
 						break;
 					case SENSOR_BATTERY:
@@ -133,6 +130,9 @@ CNNDistributedController::CNNDistributedController(const char* pch_name, CEpuck*
 						break;
 					case SENSOR_GROUND:
 						m_unNumberOfSensorInputs[i] = m_unGroundSensorsUsedNumber;
+						break;
+					case SENSOR_ENCODER:
+						m_unNumberOfSensorInputs[i] = m_unEncoderSensorsUsedNumber;
 						break;
 				}
 			}
@@ -379,7 +379,7 @@ void CNNDistributedController::SimulationStep(unsigned n_step_number, double f_t
 							}
 						}
 						break;
-
+				
 					case SENSOR_BATTERY:
 						pfSensorInputs = new double[1];
 						pfSensorInputs[0] = pfTotalSensorInputs[0]; 
@@ -401,6 +401,17 @@ void CNNDistributedController::SimulationStep(unsigned n_step_number, double f_t
 						for ( int i = 0 ; i < (*j)->GetNumberOfInputs() ; i++)
 						{
 							if ( m_unGroundSensorsUsedValue[i] == 1 )
+							{
+								pfSensorInputs[realIndex] = pfTotalSensorInputs[i]; 
+								realIndex++;
+							}
+						}
+						break;
+					case SENSOR_ENCODER:
+						pfSensorInputs = new double[m_unEncoderSensorsUsedNumber];
+						for ( int i = 0 ; i < (*j)->GetNumberOfInputs() ; i++)
+						{
+							if ( m_unEncoderSensorsUsedValue[i] == 1 )
 							{
 								pfSensorInputs[realIndex] = pfTotalSensorInputs[i]; 
 								realIndex++;

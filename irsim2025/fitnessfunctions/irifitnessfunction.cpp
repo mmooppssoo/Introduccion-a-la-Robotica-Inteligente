@@ -111,6 +111,8 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double *redBattery;
 	/* whre the PROXIMITY will be sotored */
 	double *prox;
+	/* whre the ENCODER will be sotored */
+	double *enc;
 
 	double blueLightS0=0;
 	double blueLightS7=0;

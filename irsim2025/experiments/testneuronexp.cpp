@@ -376,6 +376,8 @@ CTestNeuronExp::CTestNeuronExp(const char* pch_name, const char* paramsFile,
 		m_fRedBatteryChargeCoef = getDouble('=',pfile);
 		/* Get Red batttery charge coef */
 		m_fRedBatteryDischargeCoef = getDouble('=',pfile);
+		/* Get Encoder Sensor Error */
+		m_fEncoderSensorError = 0.0;
 
 		/* MORPHOLOGY */
 		/* Get Proximity Sensors */
