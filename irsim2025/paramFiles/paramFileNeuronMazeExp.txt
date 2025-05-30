@@ -65,7 +65,7 @@ LIGHT SENSORS USED      (8 sensors: 0 OFF, 1 ON)  = 1 1 1 1 1 1 1 1
 BLUE LIGHT SENSORS USED (8 sensors: 0 OFF, 1 ON)  = 0 0 0 0 0 0 0 0
 RED LIGHT SENSORS USED  (8 sensors: 0 OFF, 1 ON)  = 1 1 1 1 1 1 1 1
 GROUND SENSORS USED     (3 sensors: 0 OFF, 1 ON)  = 1 1 1
-ENCODER SENSORS USED     (3 sensors: 0 OFF, 1 ON)  = 1 1 
+ENCODER SENSORS USED    (2 sensors: 0 OFF, 1 ON)  = 1 1 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% GENETIC %%%%%%%%%%%%%%%%%%%%%%%%%
