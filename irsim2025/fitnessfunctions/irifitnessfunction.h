@@ -18,7 +18,6 @@ class CIriFitnessFunction;
 
 #include "fitnessfunction.h"
 #include "simulator.h"
-#include "encodersensor.h"
 
 /******************************************************************************/
 /******************************************************************************/
@@ -34,17 +33,17 @@ public:
 
 protected:
 		unsigned int m_unNumberOfSteps;
-		double 			m_fComputedFitness;
+		double m_fComputedFitness;
 		bool m_bGoalReached;
 		CEpuck* m_pcEpuck;
 		double m_fProx[8];
 		double m_fRed[8];
+		double* encoder;
 		double m_fEncoder[2];
 		double bestY;
 		/* --- odometría --- */
-		CEncoderSensor*  m_pcEnc;        // puntero al sensor
-		double           m_fOrient;      // orientación acumulada
-		double           m_fX, m_fY;     // posición acumulada
+		double    m_fOrientation;
+    	dVector2  m_vPosition;
 	
 		/* --- mapa de visitas --- */
 		std::unordered_map<long long,int> m_Visited;  // key = (ix<<20)|iy

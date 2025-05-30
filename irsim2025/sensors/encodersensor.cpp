@@ -1,15 +1,13 @@
 #include "encodersensor.h"
 
+unsigned int CEncoderSensor::SENSOR_NUMBER = NUM_ENCODER_SENSORS;
+
 /******************************************************************************/
 /******************************************************************************/
 
 CEncoderSensor::CEncoderSensor(const char* pch_name,CArena* pc_arena, float encoder_error, float initX, float initY) :
     CSensor(pch_name, NUM_ENCODER_SENSORS )
 {
-	m_pcArena=pc_arena;
-	m_fEncoderError = encoder_error;
-  m_vLastPosition.x = initX;
-  m_vLastPosition.y = initY;
 
 }
 

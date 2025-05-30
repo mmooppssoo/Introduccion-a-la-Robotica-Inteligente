@@ -20,7 +20,7 @@ CNNDistributedController::CNNDistributedController(const char* pch_name, CEpuck*
 																									 double f_eta, double f_epsilon, 
 																									 int n_write_to_file, 
 																									 unsigned int un_proximity_mumber, 
-																									 unsigned int* un_proximity_value, 
+																									 unsigned int* un_proximity_value,  
 																									 unsigned int un_contact_number, 
 																									 unsigned int* un_contact_value, 
 																									 unsigned int un_light_number, 
@@ -30,7 +30,9 @@ CNNDistributedController::CNNDistributedController(const char* pch_name, CEpuck*
 																									 unsigned int un_blue_light_number, 
 																									 unsigned int* un_blue_light_value,
 																									 unsigned int un_red_light_number, 
-																									 unsigned int* un_red_light_value) :
+																									 unsigned int* un_red_light_value,
+																									 unsigned int un_encoder_mumber, 
+																									 unsigned int* un_encoder_value) :
     CController(pch_name, pc_epuck),
     m_pfInputs(NULL)
 {
@@ -69,6 +71,8 @@ CNNDistributedController::CNNDistributedController(const char* pch_name, CEpuck*
 	m_unBlueLightSensorsUsedValue = un_blue_light_value;
 	m_unRedLightSensorsUsedNumber = un_red_light_number;
 	m_unRedLightSensorsUsedValue = un_red_light_value;
+	m_unEncoderSensorsUsedNumber = un_encoder_mumber;
+	m_unEncoderSensorsUsedValue = un_encoder_value;
 
 
 	/* DEBUG AGUTI */
@@ -102,6 +106,9 @@ CNNDistributedController::CNNDistributedController(const char* pch_name, CEpuck*
 						break;
 					case SENSOR_PROXIMITY:
 						m_unNumberOfSensorInputs[i] = m_unProximitySensorsUsedNumber;
+						break;
+					case SENSOR_ENCODER:
+						m_unNumberOfSensorInputs[i] = m_unEncoderSensorsUsedNumber;
 						break;
 					case SENSOR_REAL_LIGHT:
 						m_unNumberOfSensorInputs[i] = m_unLightSensorsUsedNumber;
@@ -275,6 +282,7 @@ CNNDistributedController::~CNNDistributedController()
 	delete [] m_unBlueLightSensorsUsedValue;
 	delete [] m_unRedLightSensorsUsedValue;
 	delete [] m_unGroundSensorsUsedValue;
+	delete [] m_unEncoderSensorsUsedValue;
 
 		
 }

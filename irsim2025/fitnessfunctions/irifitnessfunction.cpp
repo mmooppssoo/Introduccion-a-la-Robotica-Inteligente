@@ -30,7 +30,6 @@ CIriFitnessFunction::CIriFitnessFunction(const char* pch_name,
 
 	m_unNumberOfSteps = 0;
 	m_fComputedFitness = 0.0;
-	m_bGoalReached       = false;
 	
 }
 
@@ -260,38 +259,44 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 		}
 	}
 	
+	
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
+	/* ------------------ parametros ------------------ */
+	double fWheelsDistance = CEpuck::WHEELS_DISTANCE;
+	const double CELL = 0.05;    // rejilla 5 cm
 
-	/* 1.   calculo de posicion del robot con encoders */
+	/* ---------- reset al inicio del episodio ---------- */
+	if(n_simulation_step == 0){
+		m_Visited.clear();
+		m_fOrientation = 0.0;
+    	m_vPosition.x = 0.0;
+  		m_vPosition.y = 0.0;
+	}
 	
 	/* Obtener desplazamiento y cambio de orientacion */
 	double dl = m_fEncoder[0];  
 	double dr = m_fEncoder[1];  
 	double dc = (dl + dr) / 2.0;
-	double dtheta = (dr - dl) / 0.053; 
+	double dtheta = (dr - dl) / fWheelsDistance; 
 
-	/* Primera lectura: usar valores reales para ubicar la posicion y orientacion iniciales */
-	m_fOrient = 0.0;
-	m_fX = m_pcEpuck->GetPosition().x;
-	m_fY = m_pcEpuck->GetPosition().y;
+  /* Actualizacion de la posicion y orientacion con encoders */
+  	m_fOrientation += dtheta;
+  	if (m_fOrientation > 2 * M_PI) m_fOrientation -= 2 * M_PI;
+  	if (m_fOrientation < 0) m_fOrientation += 2 * M_PI;
+  	m_vPosition.x += dc * cos(m_fOrientation);
+  	m_vPosition.y += dc * sin(m_fOrientation);
 
-	/* Actualizacion de la posicion y orientacion con encoders */
-	m_fOrient += dtheta;
-	if (m_fOrient> 2 * M_PI) m_fOrient -= 2 * M_PI;
-	if (m_fOrient < 0) m_fOrient += 2 * M_PI;
-	m_fX += dc * cos(m_fOrient);
-	m_fY += dc * sin(m_fOrient);
+	/* ---------- actualiza rejilla ---------- */
+	int ix = (int) floor( (m_vPosition.x+1.5)/CELL );
+	int iy = (int) floor( (1.5-m_vPosition.y)/CELL );
+	long long key = ((long long)ix<<20) | iy;
+	int v = ++m_Visited[key];          // visitas reales
 
-	const double CELL = 0.05;        // rejilla de 5 cm
-	int ix = (int) floor( (m_fX + 1.5) / CELL );   // 3×3 arena centrada en 0
-	int iy = (int) floor( (1.5 - m_fY) / CELL );
-	long long key = ((long long)ix << 20) | iy;    // empaqueta dos int en 64 bit
-	int v = ++m_Visited[key];                      // incrementa visitas
-
+	// printf("Encoder: (%f, %f) \n", m_fEncoder[0], m_fEncoder[1]);
 	/* 2.   progreso hacia la meta */
 	double Y = maxLightSensorEval;
 
-	/* 3.   velocidad recta hacia delante */
+	/* 3.   velocidad recta  */
 	double Fwd =  maxSpeedEval * sameDirectionEval; // 0–1
 
 	/* 4.   wallFactor dependiente de Y */
@@ -308,7 +313,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* 6.   fitness base */
 	double fitness = (0.7*Y + 0.2*Fwd + 0.1*wallFactor) * wallSafe * redSafe;
 
-	/* 7.   castigo por revisitar celdas */
+	// /* 7.   castigo por revisitar celdas */
 	const int MAX_VISITS = 2;    // toleramos 2 pasos en la misma celda
 	const double P_REVISIT = 0.1;    // penaliza al 10 % si se pasa
 	if(v > MAX_VISITS) fitness *= P_REVISIT;
@@ -319,10 +324,9 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* 9.   eventos terminales */
 	bool goal   = (Y > 0.95);
 	bool fallen = (groundMemory && groundMemory[0] > 0.5);
-	if(goal) fitness = 1.0;
+	if(goal) {fitness = 1.0; m_bGoalReached = true;}
 	if(fallen) fitness = 0.0;
 
-	m_bGoalReached |= goal;
 	
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
 

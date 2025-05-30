@@ -65,14 +65,15 @@ LIGHT SENSORS USED      (8 sensors: 0 OFF, 1 ON)  = 1 1 1 1 1 1 1 1
 BLUE LIGHT SENSORS USED (8 sensors: 0 OFF, 1 ON)  = 0 0 0 0 0 0 0 0
 RED LIGHT SENSORS USED  (8 sensors: 0 OFF, 1 ON)  = 1 1 1 1 1 1 1 1
 GROUND SENSORS USED     (3 sensors: 0 OFF, 1 ON)  = 1 1 1
+ENCODER SENSORS USED     (3 sensors: 0 OFF, 1 ON)  = 1 1 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% GENETIC %%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 CHROMOSOME LENGTH                              = 52
-POPULATION SIZE                                = 120
-NUMBER OF GENERATIONS                          = 101
+POPULATION SIZE                                = 100
+NUMBER OF GENERATIONS                          = 151
 EVALUATION TIME                                = 500
 DO CROSSOVER (0 No, 1 Yes)                     = 1
 NUMBER OF CROSSOVERS (Always 1)                = 1
