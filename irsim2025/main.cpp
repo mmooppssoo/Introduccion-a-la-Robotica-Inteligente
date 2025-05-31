@@ -1558,6 +1558,7 @@ void GetGeneticParameters ( const char* param_file )
 	getDouble('=',pfile);
 	getDouble('=',pfile);
 	getDouble('=',pfile);
+	getDouble('=',pfile);
 
 	/* Get GENETIC info */
 	g_unChromosomeLength 	= getInt('=', pfile);  						
