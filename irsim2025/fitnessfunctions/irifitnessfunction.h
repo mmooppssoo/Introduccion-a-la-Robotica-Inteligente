@@ -40,7 +40,6 @@ protected:
 		double m_fProx[8];
 		double m_fRed[8];
 		double m_fEncoder[2];
-		double bestY;
 		/* --- odometría --- */
 		double           m_fOrient;      // orientación acumulada
 		dVector2         m_vPosition;     // posición acumulada

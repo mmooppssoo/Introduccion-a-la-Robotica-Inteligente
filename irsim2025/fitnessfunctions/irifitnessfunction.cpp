@@ -266,20 +266,20 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	m_vPosition.x= m_pcEpuck->GetPosition().x;
 	m_vPosition.y = m_pcEpuck->GetPosition().y;
 
-	const double CELL = 0.05;        // rejilla de 5 cm
-	int ix = (int) floor( (m_vPosition.x + 1.5) / CELL );   // 3×3 arena centrada en 0
+	const double CELL = 0.05;        
+	int ix = (int) floor( (m_vPosition.x + 1.5) / CELL );   
 	int iy = (int) floor( (1.5 - m_vPosition.y) / CELL );
-	long long key = ((long long)ix << 20) | iy;    // empaqueta dos int en 64 bit
-	int v = ++m_Visited[key];                      // incrementa visitas
+	long long key = ((long long)ix << 20) | iy;    
+	int v = ++m_Visited[key];                      
 
 	/* 2.   progreso hacia la meta */
-	static double bestY = 0.0;     // reseteamos al iniciar episodio
+	static double bestY = 0.0;     
 	double Y = maxLightSensorEval;
 	double deltaY = (Y > bestY + 1e-3) ? (Y - bestY) : 0.0;
 	if(deltaY > 0) bestY = Y;
 
 	/* 3.   velocidad recta */
-	double Fwd =  maxSpeedEval * sameDirectionEval; // 0–1
+	double Fwd =  maxSpeedEval * sameDirectionEval; 
 
 	/* 4.   wallFactor dependiente de δY */
 	double rightWall = m_fProx[2];
@@ -296,20 +296,19 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double fitness = (0.7*deltaY + 0.2*Fwd + 0.1*wallFactor) * wallSafe * redSafe;
 
 	/* 7.   castigo por revisitar celdas */
-	const int MAX_VISITS = 2;    // toleramos 2 pasos en la misma celda
-	const double P_REVISIT = 0.1;    // penaliza al 10 % si se pasa
+	const int MAX_VISITS = 2;    
+	const double P_REVISIT = 0.1;    
 	if(v > MAX_VISITS) fitness *= P_REVISIT;
 
 	/* 8.   decaimiento temporal (fuerza a progresar) */
 	fitness *= 0.999;
 
 	/* 9.   eventos terminales */
-	bool goal   = (Y > 0.95);
-	bool fallen = (groundMemory && groundMemory[0] > 0.5);
-	if(goal) fitness = 1.0;
+	m_bGoalReached   = (Y > 0.95);
+	bool fallen = (groundMemory[0] == 1.0);
+	if(m_bGoalReached) fitness = 1.0; 
 	if(fallen) fitness = 0.0;
 
-	m_bGoalReached |= goal;
 	
 	/* TO HERE YOU NEED TO CREATE YOU FITNESS */	
 
