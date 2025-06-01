@@ -68,7 +68,6 @@ private:
 		double m_fRedBatterySensorRange;
 		double m_fRedBatteryChargeCoef;
 		double m_fRedBatteryDischargeCoef;
-		double m_fEncoderSensorError;
 
 		/* Morphology */
 		unsigned int 	m_unProximitySensorsUsedNumber;
@@ -83,8 +82,6 @@ private:
 		unsigned int* m_unRedLightSensorsUsedValue;
 		unsigned int 	m_unGroundSensorsUsedNumber;
 		unsigned int* m_unGroundSensorsUsedValue;
-		unsigned int 	m_unEncoderSensorsUsedNumber;
-		unsigned int* m_unEncoderSensorsUsedValue;
 		
 		/* Genetic */	
 		float m_fUpperBounds,m_fLowerBounds;

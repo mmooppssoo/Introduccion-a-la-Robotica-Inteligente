@@ -28,7 +28,6 @@
 #include "batterysensor.h"
 #include "bluebatterysensor.h"
 #include "redbatterysensor.h"
-#include "encodersensor.h"
 
 /******************** Actuators ****************/
 #include "wheelsactuator.h"
@@ -175,8 +174,6 @@ CTestNeuronExp::CTestNeuronExp(const char* pch_name, const char* paramsFile,
 		m_fBatteryChargeCoef = 0.01;
 		/* Get batttery charge coef */
 		m_fBatteryDischargeCoef = 0.0001;
-		/* Get Encoder Sensor Error */
-		m_fEncoderSensorError = 0.0;
 
 
 		/* MORPHOLOGY */
@@ -226,13 +223,6 @@ CTestNeuronExp::CTestNeuronExp(const char* pch_name, const char* paramsFile,
 		for ( int i = 0 ; i < CGroundSensor::SENSOR_NUMBER ; i++)
 		{
 			m_unGroundSensorsUsedValue[i] = 1;
-		}
-		/* Encoder */
-		m_unEncoderSensorsUsedNumber = CEncoderSensor::SENSOR_NUMBER;
-		m_unEncoderSensorsUsedValue = new unsigned int[CEncoderSensor::SENSOR_NUMBER];
-		for ( int i = 0 ; i < CEncoderSensor::SENSOR_NUMBER ; i++)
-		{
-			m_unEncoderSensorsUsedValue[i] = 1;
 		}
 
 		/* GENETIC */
@@ -376,8 +366,6 @@ CTestNeuronExp::CTestNeuronExp(const char* pch_name, const char* paramsFile,
 		m_fRedBatteryChargeCoef = getDouble('=',pfile);
 		/* Get Red batttery charge coef */
 		m_fRedBatteryDischargeCoef = getDouble('=',pfile);
-		/* Get Encoder Sensor Error */
-		m_fEncoderSensorError = 0.0;
 
 		/* MORPHOLOGY */
 		/* Get Proximity Sensors */
@@ -530,31 +518,6 @@ CTestNeuronExp::CTestNeuronExp(const char* pch_name, const char* paramsFile,
 		printf("\n");
 		/* DEBUG */
 
-		/* Get Encoder Sensors */
-		m_unEncoderSensorsUsedNumber = 0;
-		m_unEncoderSensorsUsedValue = new unsigned int[CEncoderSensor::SENSOR_NUMBER];
-
-		/* Get first element */
-		m_unEncoderSensorsUsedValue[0] = getInt('=',pfile);
-		if ( m_unEncoderSensorsUsedValue[0] == 1)
-			m_unEncoderSensorsUsedNumber++;
-		/* Get the others */
-		for ( int i = 1 ; i < CEncoderSensor::SENSOR_NUMBER ; i++)
-		{
-			m_unEncoderSensorsUsedValue[i] = getInt(' ',pfile);
-			if ( m_unEncoderSensorsUsedValue[i] == 1)
-				m_unEncoderSensorsUsedNumber++;
-		}
-
-		/* DEBUG */
-		printf("ENCODER SENSORS NUMBER: %d -- ",m_unEncoderSensorsUsedNumber);
-		for ( int i = 0 ; i < CEncoderSensor::SENSOR_NUMBER ; i++)
-		{
-			printf("%d ",m_unEncoderSensorsUsedValue[i]);
-		}
-		printf("\n");
-		/* DEBUG */
-
 		/* GENETIC */
 		/* Careful, the genetic lines have been already parsed, so skip. But no areas*/
 		for ( int i = 0 ; i < 12 ; i++)
@@ -657,7 +620,6 @@ CTestNeuronExp::~CTestNeuronExp ( void )
 	delete [] m_unBlueLightSensorsUsedValue;
 	delete [] m_unRedLightSensorsUsedValue;
 	delete [] m_unGroundSensorsUsedValue;
-	delete [] m_unEncoderSensorsUsedValue;
 
 	/* Genetic */
 
@@ -807,11 +769,6 @@ void CTestNeuronExp::AddSensors(CEpuck* pc_epuck)
 	CSensor* pcRedBatterySensor = NULL;
 	pcRedBatterySensor = new CRedBatterySensor("Battery Sensor", m_fRedBatterySensorRange, m_fRedBatteryChargeCoef, m_fRedBatteryDischargeCoef);
 	pc_epuck->AddSensor(pcRedBatterySensor);
-
-	//Encoder Sensor
-	CSensor* pcEncoderSensor = NULL;
-	pcEncoderSensor = new CEncoderSensor("Encoder Sensor", (CArena*) m_pcSimulator->GetArena(), m_fEncoderSensorError, pc_epuck->GetPosition().x, pc_epuck->GetPosition().y);
-	pc_epuck->AddSensor(pcEncoderSensor);
 }
 
 /******************************************************************************/
@@ -821,7 +778,7 @@ void CTestNeuronExp::SetController(CEpuck* pc_epuck)
 {
 	char pchTemp[128];
 	sprintf(pchTemp, "Neuron");
-	CNNDistributedController* pcController = new CNNDistributedController(pchTemp, pc_epuck, m_unNumberOfLayers, m_unLayersOutputs, m_unLayerSensorType, m_unActivationFunction, m_mAdjacencyMatrix, m_unLearningLayerFlag, m_unEvoDevoLayerFlag, m_unLearningDiagonalFlag, m_fLowerBounds, m_fUpperBounds, m_bEvolutionaryFlag, m_bLearningFlag, m_fEta, m_fEpsilon, m_nWriteToFile, m_unProximitySensorsUsedNumber, m_unProximitySensorsUsedValue, m_unContactSensorsUsedNumber, m_unContactSensorsUsedValue, m_unLightSensorsUsedNumber, m_unLightSensorsUsedValue,  m_unGroundSensorsUsedNumber, m_unGroundSensorsUsedValue, m_unBlueLightSensorsUsedNumber, m_unBlueLightSensorsUsedValue, m_unRedLightSensorsUsedNumber, m_unRedLightSensorsUsedValue, m_unEncoderSensorsUsedNumber, m_unEncoderSensorsUsedValue );
+	CNNDistributedController* pcController = new CNNDistributedController(pchTemp, pc_epuck, m_unNumberOfLayers, m_unLayersOutputs, m_unLayerSensorType, m_unActivationFunction, m_mAdjacencyMatrix, m_unLearningLayerFlag, m_unEvoDevoLayerFlag, m_unLearningDiagonalFlag, m_fLowerBounds, m_fUpperBounds, m_bEvolutionaryFlag, m_bLearningFlag, m_fEta, m_fEpsilon, m_nWriteToFile, m_unProximitySensorsUsedNumber, m_unProximitySensorsUsedValue, m_unContactSensorsUsedNumber, m_unContactSensorsUsedValue, m_unLightSensorsUsedNumber, m_unLightSensorsUsedValue,  m_unGroundSensorsUsedNumber, m_unGroundSensorsUsedValue, m_unBlueLightSensorsUsedNumber, m_unBlueLightSensorsUsedValue, m_unRedLightSensorsUsedNumber, m_unRedLightSensorsUsedValue);
 	//pcController->SetUpperBounds(m_fUpperBounds);
 	//pcController->SetLowerBounds(m_fLowerBounds);
 	pc_epuck->SetControllerType( CONTROLLER_NEURON );

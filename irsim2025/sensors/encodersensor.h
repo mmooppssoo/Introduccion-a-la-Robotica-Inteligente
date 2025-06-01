@@ -39,8 +39,6 @@ public:
 
 		//Init Sensor
 		void InitEncoderSensor (CEpuck *p_pcEpuck);
-
-		static unsigned int SENSOR_NUMBER;
     
 protected:
     CArena* m_pcArena;
