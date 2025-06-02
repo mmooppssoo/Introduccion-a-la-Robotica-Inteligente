@@ -263,7 +263,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
 	
 	/* 1. castigo por revisitar celdas  */
-	const double L = CEpuck::WHEELS_DISTANCE; 
+	const double wd = CEpuck::WHEELS_DISTANCE; 
 
 	// 1.1 reset en cada simulacion
 	if (n_simulation_step == 0 ){
@@ -279,7 +279,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 
 	// 1.3 centro y giro del robot
 	double dc     = 0.5 * (dl + dr);          
-	double dTheta = (dr - dl) / L;            
+	double dTheta = (dr - dl) / wd;            
 
 	// 1.4 actualiza orientacion (mantiene 0..2π)
 	m_fOrientation = std::fmod(m_fOrientation + dTheta + 2*M_PI, 2*M_PI);
@@ -316,7 +316,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double redSafe = 1.0 - R;
 
 	/* 6.   fitness base */
-	double fitness = (0.7*deltaY + 0.2*Fwd + 0.1*wallFactor) * wallSafe * redSafe;
+	double fitness = (0.7*deltaY + 0.2*Fwd + 0.1*wallFactor) * wallSafe ;
 
 	/* 7.   castigo por revisitar celdas */
 	const int MAX_VISITS = 2;    
