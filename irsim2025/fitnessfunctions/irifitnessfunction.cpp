@@ -261,11 +261,34 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	}
 	
 	/* FROM HERE YOU NEED TO CREATE YOU FITNESS */	
+	
+	/* 1. castigo por revisitar celdas  */
+	const double L = CEpuck::WHEELS_DISTANCE; 
 
-	/* 1.   castigo por revisitar celdas  */
-	m_vPosition.x= m_pcEpuck->GetPosition().x;
-	m_vPosition.y = m_pcEpuck->GetPosition().y;
+	// 1.1 reset en cada simulacion
+	if (n_simulation_step == 0 ){
+	m_vPosition.x = 0.0;
+	m_vPosition.y = 0.0;
+	m_fOrientation = 0.0;
+	m_Visited.clear();
+	}
 
+	// 1.2 lecturas incrementales 
+	double dl = m_fEncoder[0];      
+	double dr = m_fEncoder[1];      
+
+	// 1.3 centro y giro del robot
+	double dc     = 0.5 * (dl + dr);          
+	double dTheta = (dr - dl) / L;            
+
+	// 1.4 actualiza orientacion (mantiene 0..2π)
+	m_fOrientation = std::fmod(m_fOrientation + dTheta + 2*M_PI, 2*M_PI);
+
+	// 1.5 proyecta con el angulo medio
+	m_vPosition.x += dc * std::cos(m_fOrientation - dTheta/2.0);
+	m_vPosition.y += dc * std::sin(m_fOrientation - dTheta/2.0);
+
+	// 1.6 actualiza celdas visitadas
 	const double CELL = 0.05;        
 	int ix = (int) floor( (m_vPosition.x + 1.5) / CELL );   
 	int iy = (int) floor( (1.5 - m_vPosition.y) / CELL );
@@ -286,7 +309,7 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	double wallGauss = exp( -pow(rightWall - 0.70,2)/(2*0.08*0.08) );
 	double wallFactor = (deltaY > 0 ? 0.5 + 0.5*wallGauss : 0.5);
 
-	/* 5.   penalizaciones */
+	/* 5.   penalizaciones proximidad y luces rojas*/
 	double P = std::max(m_fProx[0], m_fProx[7]);
 	double R = *std::max_element(m_fRed, m_fRed+8);
 	double wallSafe = 1.0 - P;

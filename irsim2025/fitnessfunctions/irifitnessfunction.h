@@ -41,7 +41,7 @@ protected:
 		double m_fRed[8];
 		double m_fEncoder[2];
 		/* --- odometría --- */
-		double           m_fOrient;      // orientación acumulada
+		double           m_fOrientation;      // orientación acumulada
 		dVector2         m_vPosition;     // posición acumulada
 	
 		/* --- mapa de visitas --- */
