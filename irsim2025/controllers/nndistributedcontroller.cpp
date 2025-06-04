@@ -608,7 +608,7 @@ void CNNDistributedController::SimulationStep(unsigned n_step_number, double f_t
 		/* INIT: WRITE TO FILES */
 		/* Write robot position and orientation */
 		FILE* filePosition = fopen("outputFiles/robotPosition", "a");
-		fprintf(filePosition,"%2.4f %2.4f %2.4f %2.4f\n", m_fTime, m_pcEpuck->GetPosition().x, m_pcEpuck->GetPosition().y, m_pcEpuck->GetRotation());
+		fprintf(filePosition,"%2.4f %2.4f\n", m_pcEpuck->GetPosition().x, m_pcEpuck->GetPosition().y);
 		fclose(filePosition);
 
 		//printf("%2.4f %2.4f %2.4f %2.4f\n", m_fTime, m_pcEpuck->GetPosition().x, m_pcEpuck->GetPosition().y, m_pcEpuck->GetRotation());
