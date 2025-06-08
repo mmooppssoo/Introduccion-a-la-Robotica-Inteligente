@@ -82,6 +82,8 @@ private:
 		unsigned int* m_unRedLightSensorsUsedValue;
 		unsigned int 	m_unGroundSensorsUsedNumber;
 		unsigned int* m_unGroundSensorsUsedValue;
+		unsigned int 	m_unEncoderSensorsUsedNumber;
+		unsigned int* m_unEncoderSensorsUsedValue;
 		
 		/* Genetic */	
 		float m_fUpperBounds,m_fLowerBounds;

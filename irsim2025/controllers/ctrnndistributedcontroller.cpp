@@ -30,7 +30,9 @@ CCTRNNDistributedController::CCTRNNDistributedController(const char* pch_name, C
 																									 unsigned int un_blue_light_number, 
 																									 unsigned int* un_blue_light_value,
 																									 unsigned int un_red_light_number, 
-																									 unsigned int* un_red_light_value) :
+																									 unsigned int* un_red_light_value,
+																									 unsigned int un_encoder_number, 
+																									 unsigned int* un_encoder_value) :
     CController(pch_name, pc_epuck),
     m_pfInputs(NULL)
 {
@@ -69,6 +71,8 @@ CCTRNNDistributedController::CCTRNNDistributedController(const char* pch_name, C
 	m_unBlueLightSensorsUsedValue = un_blue_light_value;
 	m_unRedLightSensorsUsedNumber = un_red_light_number;
 	m_unRedLightSensorsUsedValue = un_red_light_value;
+	m_unEncoderSensorsUsedNumber = un_encoder_number;
+	m_unEncoderSensorsUsedValue = un_encoder_value;
 
 
 	/* DEBUG AGUTI */
@@ -126,6 +130,9 @@ CCTRNNDistributedController::CCTRNNDistributedController(const char* pch_name, C
 						break;
 					case SENSOR_GROUND:
 						m_unNumberOfSensorInputs[i] = m_unGroundSensorsUsedNumber;
+						break;
+					case SENSOR_ENCODER:
+						m_unNumberOfSensorInputs[i] = m_unEncoderSensorsUsedNumber;
 						break;
 				}
 			}
@@ -282,6 +289,7 @@ CCTRNNDistributedController::~CCTRNNDistributedController()
 	delete [] m_unBlueLightSensorsUsedValue;
 	delete [] m_unRedLightSensorsUsedValue;
 	delete [] m_unGroundSensorsUsedValue;
+	delete [] m_unEncoderSensorsUsedValue;
 
 		
 }
@@ -398,6 +406,17 @@ void CCTRNNDistributedController::SimulationStep(unsigned n_step_number, double 
             for ( int i = 0 ; i < (*j)->GetNumberOfInputs() ; i++)
             {
               if ( m_unGroundSensorsUsedValue[i] == 1 )
+              {
+                pfSensorInputs[realIndex] = pfTotalSensorInputs[i]; 
+                realIndex++;
+              }
+            }
+            break;
+			case SENSOR_ENCODER:
+            pfSensorInputs = new double[m_unEncoderSensorsUsedNumber];
+            for ( int i = 0 ; i < (*j)->GetNumberOfInputs() ; i++)
+            {
+              if ( m_unEncoderSensorsUsedValue[i] == 1 )
               {
                 pfSensorInputs[realIndex] = pfTotalSensorInputs[i]; 
                 realIndex++;

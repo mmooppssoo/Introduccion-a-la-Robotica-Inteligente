@@ -71,7 +71,7 @@ ENCODER SENSORS USED    (2 sensors: 0 OFF, 1 ON)  = 0 0
 %%%%%%%%%%%% GENETIC %%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-CHROMOSOME LENGTH                              = 52
+CHROMOSOME LENGTH                              = 56
 POPULATION SIZE                                = 120
 NUMBER OF GENERATIONS                          = 2001
 EVALUATION TIME                                = 500

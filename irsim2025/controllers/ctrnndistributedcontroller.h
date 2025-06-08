@@ -62,7 +62,9 @@ class CCTRNNDistributedController : public CController
 				unsigned int un_blue_light_number, 
 				unsigned int* un_blue_light_value,
 				unsigned int un_red_light_number, 
-				unsigned int* un_red_light_value);
+				unsigned int* un_red_light_value,
+				unsigned int un_encoder_mumber, 
+				unsigned int* un_encoder_value);
 		~CCTRNNDistributedController();
 		
 		virtual void SimulationStep(unsigned n_step_number, double f_time, double f_step_interval);
@@ -133,6 +135,8 @@ protected:
 		unsigned int* m_unBlueLightSensorsUsedValue;
 		unsigned int  m_unRedLightSensorsUsedNumber;
 		unsigned int* m_unRedLightSensorsUsedValue;
+		unsigned int  m_unEncoderSensorsUsedNumber;
+		unsigned int* m_unEncoderSensorsUsedValue;
 
 		/* DEBUG AGUTI */
 		unsigned int m_unDebugCollisions;
