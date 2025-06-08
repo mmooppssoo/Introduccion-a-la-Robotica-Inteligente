@@ -318,7 +318,10 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* 6. Fitness base */
 	double fitness = (0.7*deltaY + 0.2*Fwd + 0.1*wallFactor) * wallSafe * pRevisit;
 
-	/* 7. Eventos terminales */
+	/* 7. Forzado a progresar */
+	fitness *= 0.999;
+
+	/* 8. Eventos terminales */
 	m_bGoalReached   = (Y > 0.95);
 	bool fallen = (groundMemory[0] == 1.0);
 	if(m_bGoalReached) fitness = 1.0; 
