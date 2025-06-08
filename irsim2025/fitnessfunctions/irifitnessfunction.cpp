@@ -289,7 +289,13 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	int ix = (int) floor( (m_vPosition.x + 1.5) / CELL );   
 	int iy = (int) floor( (1.5 - m_vPosition.y) / CELL );
 	long long key = ((long long)ix << 20) | iy;    
-	int v = ++m_Visited[key];                      
+	int v = ++m_Visited[key];   
+	
+	/* 1.5. Castigo por revisitar celdas */
+	const int MAX_VISITS = 2;    
+	double pRevisit;    
+	if(v > MAX_VISITS) pRevisit = 0.1;
+	else pRevisit = 1.0;
 
 	/* 2. Progreso hacia la meta */
 	static double bestY = 0.0;     
@@ -300,29 +306,19 @@ void CIriFitnessFunction::SimulationStep(unsigned int n_simulation_step, double 
 	/* 3. Velocidad recta */
 	double Fwd =  maxSpeedEval * sameDirectionEval; 
 
-	/* 4. WallFactor dependiente de δY */
-	double rightWall = m_fProx[2];
-	double wallGauss = exp( -pow(rightWall - 0.70,2)/(2*0.08*0.08) );
+	/* 4. WallFactor dependiente de deltaY */
+	double leftWall = m_fProx[2];
+	double wallGauss = exp( -pow(leftWall - 0.70,2)/(2*0.08*0.08) );
 	double wallFactor = (deltaY > 0 ? 0.5 + 0.5*wallGauss : 0.5);
 
-	/* 5. Penalizaciones proximidad y luces rojas*/
+	/* 5. Penalizacion proximidad */
 	double P = std::max(m_fProx[0], m_fProx[7]);
-	double R = *std::max_element(m_fRed, m_fRed+8);
 	double wallSafe = 1.0 - P;
-	double redSafe = 1.0 - R;
 
 	/* 6. Fitness base */
-	double fitness = (0.7*deltaY + 0.2*Fwd + 0.1*wallFactor) * wallSafe ;
+	double fitness = (0.7*deltaY + 0.2*Fwd + 0.1*wallFactor) * wallSafe * pRevisit;
 
-	/* 7. Castigo por revisitar celdas */
-	const int MAX_VISITS = 2;    
-	const double P_REVISIT = 0.1;    
-	if(v > MAX_VISITS) fitness *= P_REVISIT;
-
-	/* 8. Decaimiento temporal (fuerza a progresar) */
-	fitness *= 0.999;
-
-	/* 9. Eventos terminales */
+	/* 7. Eventos terminales */
 	m_bGoalReached   = (Y > 0.95);
 	bool fallen = (groundMemory[0] == 1.0);
 	if(m_bGoalReached) fitness = 1.0; 
